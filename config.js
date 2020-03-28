@@ -14,7 +14,7 @@ module.exports = {
     speed: 1,
     reduce: 0.1,
   },
-  items: {
-    spawnFrequency: 1,
+  item: {
+    spawnFrequency: 10,
   },
 };

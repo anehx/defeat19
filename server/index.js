@@ -26,10 +26,15 @@ function gameLoop() {
 
 function spawnItem() {
   state.items[uuid.v4()] = { loc: getRandomLoc() };
+  const spawnMs = config.item.spawnFrequency * 1000;
+  setTimeout(
+    spawnItem,
+    spawnMs + linear(Math.random(), 0, 1, -0.3 * spawnMs, 0.3 * spawnMs)
+  );
 }
 
 setInterval(gameLoop, 1000 / 60);
-setInterval(spawnItem, config.items.spawnFrequency * 1000);
+setTimeout(spawnItem);
 
 function getRandomLoc() {
   return [Math.random() * config.world.size, Math.random() * config.world.size];
