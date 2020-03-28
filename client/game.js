@@ -153,6 +153,13 @@ export default class Game extends Application {
     Object.entries(items).forEach(([id, { loc }]) => {
       this.getItem(id).setPosition(loc);
     });
+
+    Object.keys(this.items)
+      .filter((key) => !Object.keys(items).includes(key))
+      .forEach((key) => {
+        this.stage.removeChild(this.items[key]);
+        delete this.items[key];
+      });
   }
 
   handlePlayersUpdate(players) {
@@ -167,6 +174,14 @@ export default class Game extends Application {
       player.setInfectedState(infected);
       player.setInfectionLevel(infection);
     });
+
+    Object.keys(this.players)
+      .filter((key) => !Object.keys(players).includes(key))
+      .forEach((key) => {
+        this.stage.removeChild(this.players[key].circle);
+        this.stage.removeChild(this.players[key].text);
+        delete this.players[key];
+      });
   }
 
   sendKeyEvents() {
