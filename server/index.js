@@ -2,7 +2,7 @@ const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
@@ -14,7 +14,7 @@ const INFECTION_SPEED = 0.1;
 const INFECTION_REDUCE = 0.01;
 
 const state = {
-  players: {}
+  players: {},
 };
 
 function gameLoop() {
@@ -36,7 +36,7 @@ function addPlayer(id) {
     loc,
     v: [0, 0],
     infected,
-    infection: infected ? 100 : 0
+    infection: infected ? 100 : 0,
   };
 }
 
@@ -71,7 +71,7 @@ function getNextInfectionScore(player) {
     .map(([_, otherPlayer]) => {
       return abs(add(otherPlayer.loc, multiply(player.loc, -1)));
     })
-    .filter(distance => distance < INFECTION_THRESHOLD_DISTANCE)
+    .filter((distance) => distance < INFECTION_THRESHOLD_DISTANCE)
     // linear infection rate increase below threshold
     .reduce((tot, distance) => {
       return INFECTION_SPEED * (INFECTION_THRESHOLD_DISTANCE - distance);
@@ -93,7 +93,7 @@ function abs(v) {
 }
 
 function multiply(v, skalar) {
-  return v.map(i => i * skalar);
+  return v.map((i) => i * skalar);
 }
 
 function getNextVelocity(v, cmd) {
@@ -114,23 +114,23 @@ function getNextVelocity(v, cmd) {
   return speed < MAX_SPEED ? newV : multiply(newV, MAX_SPEED / speed);
 }
 
-io.on("connection", function(socket) {
+io.on("connection", function (socket) {
   addPlayer(socket.id);
 
   socket.emit("hello", socket.id);
 
-  socket.on("move", cmd => {
+  socket.on("move", (cmd) => {
     console.log("received move event", cmd);
     movePlayer(socket.id, cmd);
     io.emit("update", state);
   });
 
-  socket.on("disconnect", function() {
+  socket.on("disconnect", function () {
     console.log("user disconnected");
     delete state.players[socket.id];
   });
 });
 
-http.listen(3000, function() {
+http.listen(3000, function () {
   console.log("listening on *:3000");
 });
