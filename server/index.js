@@ -51,6 +51,7 @@ function addPlayer(id) {
     infected,
     infection: infected ? 100 : 0,
     health: 100,
+    dead: false,
   };
 }
 
@@ -81,6 +82,9 @@ function between(value, min, max) {
 }
 
 function updatePlayer(player) {
+  if (player.dead) {
+    return player;
+  }
   boundaryControl(player);
   collectItems(player);
   decreaseHealth(player);
@@ -101,6 +105,10 @@ function linear(x, x1 = 0, x2 = 1, y1 = 0, y2 = 1) {
 
 function decreaseHealth(player) {
   player.health -= config.health.reduce / config.simulationSpeed;
+  if (player.health < 0) {
+    player.dead = true;
+    player.health = 0;
+  }
 }
 
 function collectItems(player) {
@@ -115,7 +123,10 @@ function collectItems(player) {
 
   if (itemsInRange.length) {
     console.log("eating", itemsInRange);
-    player.health += config.health.itemIncrease * itemsInRange.length;
+    player.health += Math.min(
+      100,
+      config.health.itemIncrease * itemsInRange.length
+    );
   }
 
   itemsInRange.forEach(([id, _]) => {
