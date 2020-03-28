@@ -33,7 +33,7 @@ function spawnItem() {
   );
 }
 
-setInterval(gameLoop, 1000 / 60);
+setInterval(gameLoop, 1000 / config.simulationSpeed);
 setTimeout(spawnItem);
 
 function getRandomLoc() {
@@ -50,6 +50,7 @@ function addPlayer(id) {
     v: [0, 0],
     infected,
     infection: infected ? 100 : 0,
+    health: 100,
   };
 }
 
@@ -82,6 +83,7 @@ function between(value, min, max) {
 function updatePlayer(player) {
   boundaryControl(player);
   collectItems(player);
+  decreaseHealth(player);
   if (!player.infected) {
     player.infection = Math.min(getNextInfectionScore(player), 100);
     player.infected = player.infection === 100;
@@ -95,6 +97,10 @@ function linear(x, x1 = 0, x2 = 1, y1 = 0, y2 = 1) {
   if (x >= x2) return y2;
   const m = (y2 - y1) / (x2 - x1);
   return m * x + y1 - m * x1;
+}
+
+function decreaseHealth(player) {
+  player.health -= config.health.reduce / config.simulationSpeed;
 }
 
 function collectItems(player) {
