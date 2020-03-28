@@ -25,9 +25,11 @@ function gameLoop() {
 }
 
 function spawnItem() {
-  state.items[uuid.v4()] = { loc: getRandomLoc() };
+  if (Object.keys(state.items).length <= getLivingPlayerCount()) {
+    state.items[uuid.v4()] = { loc: getRandomLoc() };
+  }
   const spawnMs =
-    config.item.spawnFrequency * 1000 * Math.max(1, livingPlayerCount());
+    config.item.spawnFrequency * 1000 * Math.max(1, getLivingPlayerCount());
   setTimeout(
     spawnItem,
     spawnMs + linear(Math.random(), 0, 1, -0.2 * spawnMs, 0.2 * spawnMs)
@@ -41,14 +43,14 @@ function getRandomLoc() {
   return [Math.random() * config.world.size, Math.random() * config.world.size];
 }
 
-function livingPlayerCount() {
+function getLivingPlayerCount() {
   return Object.values(state.players).filter((player) => !player.dead).length;
 }
 
 function spawnPlayer(id) {
   const loc = getRandomLoc();
   console.log(`new player joined (${id})`);
-  const infected = livingPlayerCount() < 1;
+  const infected = getLivingPlayerCount() < 1;
   state.players[id] = {
     id,
     loc,
