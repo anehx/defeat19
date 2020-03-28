@@ -12,7 +12,7 @@ export default class Game extends Application {
       height: window.innerHeight,
       antialias: true,
       transparent: true,
-      resolution: 1
+      resolution: 1,
     });
 
     this.stage.position.x = this.renderer.width / 2;
@@ -20,7 +20,7 @@ export default class Game extends Application {
 
     this.boundaries = {
       width: window.innerWidth,
-      height: window.innerHeight
+      height: window.innerHeight,
     };
 
     this._players = {};
@@ -57,7 +57,7 @@ export default class Game extends Application {
     window.addEventListener("resize", () => {
       this.boundaries = {
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       };
 
       this.renderer.resize(window.innerWidth, window.innerHeight);
@@ -73,7 +73,7 @@ export default class Game extends Application {
   }
 
   addSocketListeners() {
-    this.socket.on("hello", id => (this.playerId = id));
+    this.socket.on("hello", (id) => (this.playerId = id));
 
     this.socket.on("update", ({ players }) => {
       Object.entries(players).forEach(([id, { loc, infected, infection }]) => {
