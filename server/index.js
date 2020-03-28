@@ -14,11 +14,12 @@ const state = {
 
 function gameLoop() {
   Object.entries(state.players).map(([id, player]) => {
+    console.log("update Player", player);
     state.players[id] = updatePlayer(player);
   });
 }
 
-setInterval(gameLoop, 33);
+setInterval(gameLoop, 1000);
 
 function addPlayer(id) {
   const loc = [Math.random(WORLD_SIZE), Math.random(WORLD_SIZE)];
@@ -31,7 +32,7 @@ function movePlayer(id, cmd) {
 }
 
 function updatePlayer(player) {
-  return add(player.loc, player.v);
+  return { ...player, loc: add(player.loc, player.v) };
 }
 
 function add(v1, v2) {
