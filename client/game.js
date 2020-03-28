@@ -3,7 +3,7 @@ import io from "socket.io-client";
 
 import Player from "./player";
 
-const { Application } = PIXI;
+const { Application, Graphics } = PIXI;
 
 export default class Game extends Application {
   constructor() {
@@ -12,15 +12,20 @@ export default class Game extends Application {
       height: window.innerHeight,
       antialias: true,
       transparent: true,
-      resolution: 1
+      resolution: 1,
     });
+
+    const border = new Graphics();
+    border.lineStyle(5, 0x000000);
+    border.drawRect(0, 0, 2000, 2000);
+    this.stage.addChild(border);
 
     this.stage.position.x = this.renderer.width / 2;
     this.stage.position.y = this.renderer.height / 2;
 
     this.boundaries = {
       width: window.innerWidth,
-      height: window.innerHeight
+      height: window.innerHeight,
     };
 
     this._players = {};
@@ -35,7 +40,7 @@ export default class Game extends Application {
       up: false,
       down: false,
       left: false,
-      right: false
+      right: false,
     };
 
     this.sendKeyEvents();
@@ -66,7 +71,7 @@ export default class Game extends Application {
     window.addEventListener("resize", () => {
       this.boundaries = {
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       };
 
       this.renderer.resize(window.innerWidth, window.innerHeight);
@@ -91,7 +96,7 @@ export default class Game extends Application {
   }
 
   addSocketListeners() {
-    this.socket.on("hello", id => (this.playerId = id));
+    this.socket.on("hello", (id) => (this.playerId = id));
 
     this.socket.on("update", ({ players }) => {
       Object.entries(players).forEach(([id, { loc, infected, infection }]) => {

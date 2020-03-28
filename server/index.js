@@ -6,9 +6,9 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
-const WORLD_SIZE = 1000;
-const MAX_SPEED = 5;
-const ACCELERATION = 0.5;
+const WORLD_SIZE = 2000;
+const MAX_SPEED = 7;
+const ACCELERATION = 1;
 const INFECTION_THRESHOLD_DISTANCE = 150;
 const INFECTION_SPEED = 1;
 const INFECTION_REDUCE = 0.02;
