@@ -29,7 +29,7 @@ function spawnItem() {
   const spawnMs =
     config.item.spawnFrequency *
     1000 *
-    Object.keys(state.players.filter((player) => !player.dead)).length;
+    Object.keys(state.players).filter((player) => !player.dead).length;
   setTimeout(
     spawnItem,
     spawnMs + linear(Math.random(), 0, 1, -0.2 * spawnMs, 0.2 * spawnMs)
@@ -107,7 +107,10 @@ function linear(x, x1 = 0, x2 = 1, y1 = 0, y2 = 1) {
 }
 
 function decreaseHealth(player) {
-  player.health -= config.health.reduce / config.simulationSpeed;
+  const healthReduce = player.infected
+    ? config.health.reduceInfected
+    : config.health.reduceHealthy;
+  player.health -= healthReduce / config.simulationSpeed;
   if (player.health < 0) {
     player.dead = true;
     player.infected = false;
