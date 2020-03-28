@@ -123,9 +123,9 @@ function collectItems(player) {
 
   if (itemsInRange.length) {
     console.log("eating", itemsInRange);
-    player.health += Math.min(
+    player.health = Math.min(
       100,
-      config.health.itemIncrease * itemsInRange.length
+      player.health + config.health.itemIncrease * itemsInRange.length
     );
   }
 
