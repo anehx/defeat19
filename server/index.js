@@ -183,7 +183,7 @@ function handleInfection(player) {
 
   if (player.state === INFECTED && player.infection === 0) {
     player.state = IMMUNE;
-  } else if (!player.state === HEALTHY && player.infection >= 100) {
+  } else if (player.state === HEALTHY && player.infection >= 100) {
     player.state = INFECTED;
   }
 }
