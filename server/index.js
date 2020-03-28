@@ -17,6 +17,8 @@ function gameLoop() {
     console.log("update Player", player);
     state.players[id] = updatePlayer(player);
   });
+
+  io.emit("update", state);
 }
 
 setInterval(gameLoop, 1000);
