@@ -10,6 +10,10 @@ function multiply(v, skalar) {
   return v.map((i) => i * skalar);
 }
 
+function distance(v1, v2) {
+  return abs(add(v1, multiply(v2, -1)));
+}
+
 // linear scaling
 function linear(x, x1 = 0, x2 = 1, y1 = 0, y2 = 1) {
   if (x <= x1) return y1;
@@ -21,6 +25,7 @@ function linear(x, x1 = 0, x2 = 1, y1 = 0, y2 = 1) {
 module.exports = {
   add,
   abs,
+  distance,
   multiply,
   linear,
 };

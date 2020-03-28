@@ -4,7 +4,7 @@ const uuid = require("uuid");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const config = require("../config");
-const { abs, add, multiply, linear } = require("./math");
+const { abs, add, multiply, linear, distance } = require("./math");
 
 app.get("/debug", function (req, res) {
   res.sendFile(__dirname + "/index.html");
@@ -27,7 +27,8 @@ function gameLoop() {
 
 function spawnItem() {
   if (Object.keys(state.items).length <= getLivingPlayerCount()) {
-    state.items[uuid.v4()] = { loc: getRandomLoc() };
+    const id = uuid.v4();
+    state.items[id] = { id, loc: getRandomLoc() };
   }
   const spawnMs =
     config.item.spawnFrequency * 1000 * Math.max(1, getLivingPlayerCount());
@@ -118,14 +119,12 @@ function decreaseHealth(player) {
 }
 
 function collectItems(player) {
-  const itemsInRange = Object.entries(state.items)
+  const itemsInRange = Object.values(state.items)
     // map to distances
-    .map(([id, item]) => {
-      return [id, abs(add(item.loc, multiply(player.loc, -1)))];
+    .map(({ id, loc }) => {
+      return { id, distance: distance(loc, player.loc) };
     })
-    .filter(([id, distance]) => {
-      return distance <= config.player.size * 2;
-    });
+    .filter(({ distance }) => distance <= config.player.size * 2);
 
   if (itemsInRange.length) {
     player.health = Math.min(
@@ -134,7 +133,7 @@ function collectItems(player) {
     );
   }
 
-  itemsInRange.forEach(([id, _]) => {
+  itemsInRange.forEach(({ id }) => {
     delete state.items[id];
   });
 }
@@ -146,12 +145,8 @@ function getNextInfectionScore(player) {
     // only infected players can pass it on
     .filter((other) => other.infected)
     // map to distances
-    .map((otherPlayer) => abs(add(otherPlayer.loc, multiply(player.loc, -1))))
+    .map((otherPlayer) => distance(otherPlayer.loc, player.loc))
     .filter((distance) => distance < config.infection.thresholdDistance)
-    .map((distance) => {
-      console.log(distance);
-      return distance;
-    })
     // linear infection rate increase below threshold
     .reduce((total, distance) => {
       return (
