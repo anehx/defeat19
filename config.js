@@ -16,5 +16,6 @@ module.exports = {
   },
   item: {
     spawnFrequency: 10,
+    size: 10,
   },
 };
