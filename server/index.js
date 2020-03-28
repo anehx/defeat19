@@ -27,9 +27,7 @@ function gameLoop() {
 function spawnItem() {
   state.items[uuid.v4()] = { loc: getRandomLoc() };
   const spawnMs =
-    config.item.spawnFrequency *
-    1000 *
-    Object.keys(state.players).filter((player) => !player.dead).length;
+    config.item.spawnFrequency * 1000 * Math.max(1, livingPlayerCount());
   setTimeout(
     spawnItem,
     spawnMs + linear(Math.random(), 0, 1, -0.2 * spawnMs, 0.2 * spawnMs)
@@ -43,10 +41,14 @@ function getRandomLoc() {
   return [Math.random() * config.world.size, Math.random() * config.world.size];
 }
 
-function addPlayer(id) {
+function livingPlayerCount() {
+  return Object.values(state.players).filter((player) => !player.dead).length;
+}
+
+function spawnPlayer(id) {
   const loc = getRandomLoc();
-  console.log(`new player ${id} joined at ${loc}`);
-  const infected = Object.keys(state.players).length % 2 > 0;
+  console.log(`new player joined (${id})`);
+  const infected = livingPlayerCount() < 1;
   state.players[id] = {
     id,
     loc,
@@ -110,8 +112,10 @@ function decreaseHealth(player) {
   const healthReduce = player.infected
     ? config.health.reduceInfected
     : config.health.reduceHealthy;
+
   player.health -= healthReduce / config.simulationSpeed;
-  if (player.health < 0) {
+
+  if (player.health <= 0) {
     player.dead = true;
     player.infected = false;
     player.health = 0;
@@ -129,7 +133,6 @@ function collectItems(player) {
     });
 
   if (itemsInRange.length) {
-    console.log("eating", itemsInRange);
     player.health = Math.min(
       100,
       player.health + config.health.itemIncrease * itemsInRange.length
@@ -206,12 +209,11 @@ function getNextVelocity(v, cmd) {
 }
 
 io.on("connection", function (socket) {
-  addPlayer(socket.id);
+  spawnPlayer(socket.id);
 
   socket.emit("hello", socket.id);
 
   socket.on("move", (cmd) => {
-    console.log("received move event", cmd);
     movePlayer(socket.id, cmd);
     io.emit("update", state);
   });
