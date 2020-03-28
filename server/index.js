@@ -29,7 +29,7 @@ function spawnItem() {
 }
 
 setInterval(gameLoop, 1000 / 60);
-setInterval(spawnItem, config.item.spawnFrequency * 1000);
+setInterval(spawnItem, config.items.spawnFrequency * 1000);
 
 function getRandomLoc() {
   return [Math.random() * config.world.size, Math.random() * config.world.size];
