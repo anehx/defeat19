@@ -32,6 +32,7 @@ function spawnItem() {
   }
   const spawnMs =
     config.item.spawnFrequency * 1000 * Math.max(1, getLivingPlayerCount());
+
   setTimeout(
     spawnItem,
     spawnMs + linear(Math.random(), 0, 1, -0.2 * spawnMs, 0.2 * spawnMs)
@@ -39,7 +40,7 @@ function spawnItem() {
 }
 
 setInterval(gameLoop, 1000 / config.simulationSpeed);
-setTimeout(spawnItem);
+spawnItem();
 
 function getRandomLoc() {
   return [Math.random() * config.world.size, Math.random() * config.world.size];
@@ -51,7 +52,6 @@ function getLivingPlayerCount() {
 
 function spawnPlayer(id) {
   const loc = getRandomLoc();
-  console.log(`new player joined (${id})`);
   const infected = getLivingPlayerCount() < 1;
   state.players[id] = {
     id,
@@ -120,16 +120,14 @@ function decreaseHealth(player) {
 
 function collectItems(player) {
   const itemsInRange = Object.values(state.items)
-    // map to distances
-    .map(({ id, loc }) => {
-      return { id, distance: distance(loc, player.loc) };
-    })
+    .map(({ id, loc }) => ({ id, distance: distance(loc, player.loc) }))
     .filter(({ distance }) => distance <= config.player.size * 2);
 
-  if (itemsInRange.length) {
+  const itemCount = itemsInRange.length;
+  if (itemCount > 0) {
     player.health = Math.min(
       100,
-      player.health + config.health.itemIncrease * itemsInRange.length
+      player.health + config.health.itemIncrease * itemCount
     );
   }
 
@@ -140,11 +138,8 @@ function collectItems(player) {
 
 function getNextInfectionScore(player) {
   const infectionRaise = Object.values(state.players)
-    // can't self-infect
     .filter((other) => other.id !== player.id)
-    // only infected players can pass it on
     .filter((other) => other.infected)
-    // map to distances
     .map((otherPlayer) => distance(otherPlayer.loc, player.loc))
     .filter((distance) => distance < config.infection.thresholdDistance)
     // linear infection rate increase below threshold
@@ -161,11 +156,10 @@ function getNextInfectionScore(player) {
       );
     }, 0);
 
-  const newInfectionScore = Math.max(
+  return Math.max(
     0,
     player.infection + infectionRaise - config.infection.reduce
   );
-  return newInfectionScore;
 }
 
 function getNextVelocity(v, cmd) {
@@ -199,7 +193,6 @@ io.on("connection", function (socket) {
   });
 
   socket.on("disconnect", function () {
-    console.log("user disconnected");
     delete state.players[socket.id];
   });
 });
