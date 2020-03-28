@@ -31,12 +31,6 @@ export default class Game extends Application {
       width: window.innerWidth,
       height: window.innerHeight,
     };
-    this.keys = {
-      up: false,
-      down: false,
-      left: false,
-      right: false,
-    };
 
     this.connect();
 
@@ -44,10 +38,14 @@ export default class Game extends Application {
     this.drawGrid();
 
     this.addResizeListeners();
-    this.addKeyboardListeners();
+    this.addMouseListeners();
     this.addSocketListeners();
 
     this.sendKeyEvents();
+  }
+
+  get me() {
+    return this.players[this.playerId];
   }
 
   connect() {
@@ -125,23 +123,24 @@ export default class Game extends Application {
     });
   }
 
-  addKeyboardListeners() {
-    const handleKeyEvent = (code, pressed) => {
-      if (/Arrow(Up|Down|Left|Right)/.test(code)) {
-        const key = code.replace("Arrow", "").toLowerCase();
-        this.keys[key] = pressed;
-      }
+  addMouseListeners() {
+    document.addEventListener("mousemove", ({ clientX, clientY }) => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const max = Math.min(width, height) * 0.2;
 
-      if (code === "Space") this.socket.emit("cough");
-    };
+      const pxFromCenter = {
+        x: Math.max(Math.min(clientX - width / 2, max), -1 * max),
+        y: Math.max(Math.min(clientY - height / 2, max), -1 * max),
+      };
 
-    document.addEventListener("keydown", ({ code }) =>
-      handleKeyEvent(code, true)
-    );
+      const velocity = {
+        x: (pxFromCenter.x / max) * config.world.maxSpeed,
+        y: (pxFromCenter.y / max) * config.world.maxSpeed,
+      };
 
-    document.addEventListener("keyup", ({ code }) =>
-      handleKeyEvent(code, false)
-    );
+      this.velocity = velocity;
+    });
   }
 
   addSocketListeners() {
@@ -195,9 +194,7 @@ export default class Game extends Application {
   }
 
   sendKeyEvents() {
-    Object.entries(this.keys).forEach(([key, value]) => {
-      if (value) this.socket.emit("move", key);
-    });
+    this.socket.emit("move", this.velocity);
 
     setTimeout(() => this.sendKeyEvents(), 1000 / 10);
   }
