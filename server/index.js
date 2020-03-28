@@ -24,7 +24,7 @@ function gameLoop() {
 setInterval(gameLoop, 1000);
 
 function addPlayer(id) {
-  const loc = [Math.random(WORLD_SIZE), Math.random(WORLD_SIZE)];
+  const loc = [Math.random() * WORLD_SIZE, Math.random() * WORLD_SIZE];
   console.log(`new player ${id} joined at ${loc}`);
   state.players[id] = { loc, v: [0, 0] };
 }
@@ -33,8 +33,17 @@ function movePlayer(id, cmd) {
   state.players[id].v = getNextVelocity(state.players[id].v, cmd);
 }
 
+function boundary(loc) {
+  return [between(loc[0], 0, WORLD_SIZE), between(loc[1], 0, WORLD_SIZE)];
+}
+
+function between(value, min, max) {
+  return Math.max(Math.min(max, value), 0);
+}
+
 function updatePlayer(player) {
-  return { ...player, loc: add(player.loc, player.v) };
+  const loc = boundary(add(player.loc, player.v));
+  return { ...player, loc };
 }
 
 function add(v1, v2) {
