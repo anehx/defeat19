@@ -127,7 +127,7 @@ export default class Game extends Application {
     document.addEventListener("mousemove", ({ clientX, clientY }) => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const max = Math.min(width, height) * 0.5;
+      const max = Math.min(width, height) * 0.3;
 
       const pxFromCenter = {
         x: Math.max(Math.min(clientX - width / 2, max), -1 * max),
