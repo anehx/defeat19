@@ -1,23 +1,25 @@
-import * as PIXI from "pixi.js";
 import io from "socket.io-client";
-import Player from "./player";
+import Game from "./game";
 
-const app = new PIXI.Application({
-  width: 700,
-  height: 700,
-  antialias: true,
-  transparent: false,
-  resolution: 1
+const socket = io("http://localhost:3000");
+
+const game = new Game();
+
+socket.on("hello", id => console.log(`Connected with ID ${id}`));
+
+socket.on("update", ({ players }) => {
+  Object.entries(players).forEach(([id, { loc }]) => {
+    const player = game.getPlayer(id);
+    player.setPosition(loc);
+  });
 });
 
-document.body.appendChild(app.view);
+document.body.appendChild(game.view);
 
-const player = new Player();
-
-app.stage.addChild(player);
+window.addEventListener("resize", () => game._resize());
 
 document.addEventListener("keydown", ({ code }) => {
   if (/Arrow(Up|Down|Left|Right)/.test(code)) {
-    console.log("move", code.replace("Arrow", "").toLowerCase());
+    socket.emit("move", code.replace("Arrow", "").toLowerCase());
   }
 });

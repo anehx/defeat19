@@ -3,8 +3,12 @@ import * as PIXI from "pixi.js";
 const { Graphics } = PIXI;
 
 export default class Player extends Graphics {
-  constructor() {
+  constructor(id) {
     super();
+
+    this.id = id;
+
+    this.position = { x: 100, y: 100 };
 
     this.beginFill(this.color);
     this.drawCircle(this.position.x, this.position.y, this.size);
@@ -15,11 +19,12 @@ export default class Player extends Graphics {
     return 0xe74c3c;
   }
 
-  get position() {
-    return { x: 20, y: 20 };
-  }
-
   get size() {
     return 50;
+  }
+
+  setPosition([x, y]) {
+    this.x = x;
+    this.y = y;
   }
 }

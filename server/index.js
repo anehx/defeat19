@@ -2,15 +2,15 @@ const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
-app.get("/", function (req, res) {
+app.get("/", function(req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
-const WORLD_SIZE = 10;
-const MAX_SPEED = 1;
+const WORLD_SIZE = 700;
+const MAX_SPEED = 200;
 
 const state = {
-  players: {},
+  players: {}
 };
 
 function gameLoop() {
@@ -22,7 +22,7 @@ function gameLoop() {
   io.emit("update", state);
 }
 
-setInterval(gameLoop, 1000);
+setInterval(gameLoop, 1000 / 60);
 
 function addPlayer(id) {
   const loc = [Math.random() * WORLD_SIZE, Math.random() * WORLD_SIZE];
@@ -56,7 +56,7 @@ function abs(v) {
 }
 
 function multiply(v, skalar) {
-  return v.map((i) => i * skalar);
+  return v.map(i => i * skalar);
 }
 
 function getNextVelocity(v, cmd) {
@@ -77,23 +77,23 @@ function getNextVelocity(v, cmd) {
   return speed < MAX_SPEED ? newV : multiply(newV, MAX_SPEED / speed);
 }
 
-io.on("connection", function (socket) {
+io.on("connection", function(socket) {
   addPlayer(socket.id);
 
   socket.emit("hello", socket.id);
 
-  socket.on("move", (cmd) => {
+  socket.on("move", cmd => {
     console.log("received move event", cmd);
     movePlayer(socket.id, cmd);
     io.emit("update", state);
   });
 
-  socket.on("disconnect", function () {
+  socket.on("disconnect", function() {
     console.log("user disconnected");
     delete state.players[socket.id];
   });
 });
 
-http.listen(3000, function () {
+http.listen(3000, function() {
   console.log("listening on *:3000");
 });
