@@ -75,8 +75,8 @@ function spawnPlayer(id) {
   };
 }
 
-function movePlayer(id, cmd) {
-  game.players[id].v = getNextVelocity(game.players[id].v, cmd);
+function movePlayer(id, mouseDir) {
+  game.players[id].v = getNextVelocity(mouseDir);
 }
 
 function isWithinBoundary(coord) {
@@ -188,8 +188,8 @@ function handleInfection(player) {
   }
 }
 
-function getNextVelocity(currentV, mouseDir) {
-  const newV = add(currentV, mouseDir);
+function getNextVelocity(mouseDir) {
+  const newV = mouseDir;
   const speed = abs(newV);
   return speed < config.world.maxSpeed
     ? newV
