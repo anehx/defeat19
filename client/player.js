@@ -30,7 +30,7 @@ export class PlayerCircle extends Graphics {
 
 export class PlayerText extends Text {
   constructor() {
-    super("", { fontFamily: "Monospace", fontSize: 15 });
+    super("", { fontFamily: "Monospace", fontSize: 15, align: "center" });
   }
 }
 
@@ -46,8 +46,8 @@ export default class Player {
     this.circle.x = x;
     this.circle.y = y;
 
-    this.text.x = x + config.player.size;
-    this.text.y = y - config.player.size * 2;
+    this.text.x = x - this.text.width / 2;
+    this.text.y = y - config.player.size * 3;
   }
 
   setInfectedState(state) {
@@ -57,7 +57,9 @@ export default class Player {
     }
   }
 
-  setInfectionLevel(percentage) {
-    this.text.text = `${Math.ceil(percentage)}%`;
+  setText(infection, health) {
+    const c = Math.ceil;
+
+    this.text.text = `Infection: ${c(infection)}%\nHealth: ${c(health)}%`;
   }
 }

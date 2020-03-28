@@ -163,17 +163,19 @@ export default class Game extends Application {
   }
 
   handlePlayersUpdate(players) {
-    Object.entries(players).forEach(([id, { loc, infected, infection }]) => {
-      if (id == this.playerId) {
-        this.setCenter(loc);
+    Object.entries(players).forEach(
+      ([id, { loc, infected, infection, health }]) => {
+        if (id == this.playerId) {
+          this.setCenter(loc);
+        }
+
+        const player = this.getPlayer(id);
+
+        player.setPosition(loc);
+        player.setInfectedState(infected);
+        player.setText(infection, health);
       }
-
-      const player = this.getPlayer(id);
-
-      player.setPosition(loc);
-      player.setInfectedState(infected);
-      player.setInfectionLevel(infection);
-    });
+    );
 
     Object.keys(this.players)
       .filter((key) => !Object.keys(players).includes(key))
