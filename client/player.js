@@ -17,6 +17,8 @@ export class PlayerCircle extends Graphics {
   }
 
   draw() {
+    this.clear();
+
     this.beginFill(this.color);
     this.drawCircle(0, 0, config.player.size);
     this.endFill();
