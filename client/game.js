@@ -12,7 +12,7 @@ export default class Game extends Application {
       height: window.innerHeight,
       antialias: true,
       transparent: true,
-      resolution: 1,
+      resolution: 1
     });
 
     this.stage.position.x = this.renderer.width / 2;
@@ -20,7 +20,7 @@ export default class Game extends Application {
 
     this.boundaries = {
       width: window.innerWidth,
-      height: window.innerHeight,
+      height: window.innerHeight
     };
 
     this._players = {};
@@ -30,6 +30,15 @@ export default class Game extends Application {
     this.addResizeListeners();
     this.addKeyboardListeners();
     this.addSocketListeners();
+
+    this.keys = {
+      up: false,
+      down: false,
+      left: false,
+      right: false
+    };
+
+    this.sendKeyEvents();
   }
 
   getPlayer(id) {
@@ -57,7 +66,7 @@ export default class Game extends Application {
     window.addEventListener("resize", () => {
       this.boundaries = {
         width: window.innerWidth,
-        height: window.innerHeight,
+        height: window.innerHeight
       };
 
       this.renderer.resize(window.innerWidth, window.innerHeight);
@@ -65,15 +74,24 @@ export default class Game extends Application {
   }
 
   addKeyboardListeners() {
-    document.addEventListener("keydown", ({ code }) => {
+    const handleKeyEvent = (code, pressed) => {
       if (/Arrow(Up|Down|Left|Right)/.test(code)) {
-        this.socket.emit("move", code.replace("Arrow", "").toLowerCase());
+        const key = code.replace("Arrow", "").toLowerCase();
+        this.keys[key] = pressed;
       }
-    });
+    };
+
+    document.addEventListener("keydown", ({ code }) =>
+      handleKeyEvent(code, true)
+    );
+
+    document.addEventListener("keyup", ({ code }) =>
+      handleKeyEvent(code, false)
+    );
   }
 
   addSocketListeners() {
-    this.socket.on("hello", (id) => (this.playerId = id));
+    this.socket.on("hello", id => (this.playerId = id));
 
     this.socket.on("update", ({ players }) => {
       Object.entries(players).forEach(([id, { loc, infected, infection }]) => {
@@ -88,5 +106,13 @@ export default class Game extends Application {
         player.setInfectionLevel(infection);
       });
     });
+  }
+
+  sendKeyEvents() {
+    Object.entries(this.keys).forEach(([key, value]) => {
+      if (value) this.socket.emit("move", key);
+    });
+
+    setTimeout(() => this.sendKeyEvents(), 1000 / 10);
   }
 }
