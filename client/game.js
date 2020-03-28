@@ -21,6 +21,9 @@ export default class Game extends Application {
     this.stage.position.x = this.renderer.width / 2;
     this.stage.position.y = this.renderer.height / 2;
 
+    this.stage.scale.x = 0.75;
+    this.stage.scale.y = 0.75;
+
     this.players = {};
     this.items = {};
 
@@ -84,7 +87,8 @@ export default class Game extends Application {
       this.players[id] = player;
 
       this.stage.addChild(player.circle);
-      this.stage.addChild(player.text);
+      this.stage.addChild(player.infection);
+      this.stage.addChild(player.health);
     }
 
     return player;
@@ -127,6 +131,8 @@ export default class Game extends Application {
         const key = code.replace("Arrow", "").toLowerCase();
         this.keys[key] = pressed;
       }
+
+      if (code === "Space") this.socket.emit("cough");
     };
 
     document.addEventListener("keydown", ({ code }) =>
@@ -174,7 +180,8 @@ export default class Game extends Application {
         player.setPosition(loc);
         player.setInfectedState(infected);
         player.setDeadState(dead);
-        player.setText(infection, health);
+        player.setInfectionLevel(infection);
+        player.setHealthLevel(health);
       }
     );
 

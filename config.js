@@ -9,6 +9,10 @@ module.exports = {
   },
   player: {
     size: 20,
+    bar: {
+      width: 100,
+      height: 10,
+    },
   },
   health: {
     itemIncrease: 20,
@@ -18,7 +22,7 @@ module.exports = {
   infection: {
     thresholdDistance: 150,
     speed: 1,
-    reduce: 0.01,
+    reduce: 0.1,
   },
   item: {
     spawnFrequency: 10,

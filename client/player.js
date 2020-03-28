@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js";
 import config from "../config";
+import Bar from "./bar";
 
-const { Graphics, Text } = PIXI;
+const { Graphics } = PIXI;
 
 export class PlayerCircle extends Graphics {
   constructor() {
@@ -29,26 +30,24 @@ export class PlayerCircle extends Graphics {
   }
 }
 
-export class PlayerText extends Text {
-  constructor() {
-    super("", { fontFamily: "Monospace", fontSize: 15, align: "center" });
-  }
-}
-
 export default class Player {
   constructor(id) {
     this.id = id;
 
     this.circle = new PlayerCircle();
-    this.text = new PlayerText();
+    this.health = new Bar();
+    this.infection = new Bar();
   }
 
   setPosition([x, y]) {
     this.circle.x = x;
     this.circle.y = y;
 
-    this.text.x = x - this.text.width / 2;
-    this.text.y = y - config.player.size * 3;
+    this.health.x = x - this.health.width / 2;
+    this.health.y = y - config.player.size * 3;
+
+    this.infection.x = x - this.infection.width / 2;
+    this.infection.y = y - config.player.size * 4;
   }
 
   setInfectedState(state) {
@@ -65,9 +64,11 @@ export default class Player {
     }
   }
 
-  setText(infection, health) {
-    const c = Math.ceil;
+  setHealthLevel(percentage) {
+    this.health.draw(percentage, 0x00ff00);
+  }
 
-    this.text.text = `Infection: ${c(infection)}%\nHealth: ${c(health)}%`;
+  setInfectionLevel(percentage) {
+    this.infection.draw(percentage, 0xff0000);
   }
 }
