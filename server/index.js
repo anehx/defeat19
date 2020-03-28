@@ -81,6 +81,7 @@ function between(value, min, max) {
 
 function updatePlayer(player) {
   boundaryControl(player);
+  collectItems(player);
   if (!player.infected) {
     player.infection = Math.min(getNextInfectionScore(player), 100);
     player.infected = player.infection === 100;
@@ -94,6 +95,25 @@ function linear(x, x1 = 0, x2 = 1, y1 = 0, y2 = 1) {
   if (x >= x2) return y2;
   const m = (y2 - y1) / (x2 - x1);
   return m * x + y1 - m * x1;
+}
+
+function collectItems(player) {
+  const itemsInRange = Object.entries(state.items)
+    // map to distances
+    .map(([id, item]) => {
+      return [id, abs(add(item.loc, multiply(player.loc, -1)))];
+    })
+    .filter(([id, distance]) => {
+      return distance <= config.player.size * 2;
+    });
+
+  if (itemsInRange.length) {
+    console.log("eating", itemsInRange);
+  }
+
+  itemsInRange.forEach(([id, _]) => {
+    delete state.items[id];
+  });
 }
 
 function getNextInfectionScore(player) {
