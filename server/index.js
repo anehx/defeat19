@@ -44,8 +44,22 @@ function movePlayer(id, cmd) {
   state.players[id].v = getNextVelocity(state.players[id].v, cmd);
 }
 
-function boundary(loc) {
-  return [between(loc[0], 0, WORLD_SIZE), between(loc[1], 0, WORLD_SIZE)];
+function isWithinBoundary(coord) {
+  return 0 <= coord && coord <= WORLD_SIZE;
+}
+
+function boundaryControl(player) {
+  const newPosition = add(player.loc, player.v);
+  if (!isWithinBoundary(newPosition[0])) {
+    player.v[0] = 0;
+  }
+  if (!isWithinBoundary(newPosition[1])) {
+    player.v[1] = 0;
+  }
+  player.loc = [
+    between(newPosition[0], 0, WORLD_SIZE),
+    between(newPosition[1], 0, WORLD_SIZE),
+  ];
 }
 
 function between(value, min, max) {
@@ -53,12 +67,12 @@ function between(value, min, max) {
 }
 
 function updatePlayer(player) {
-  const loc = boundary(add(player.loc, player.v));
+  boundaryControl(player);
   if (!player.infected) {
     player.infection = Math.min(getNextInfectionScore(player), 100);
     player.infected = player.infection === 100;
   }
-  return { ...player, loc };
+  return player;
 }
 
 function getNextInfectionScore(player) {
