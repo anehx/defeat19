@@ -30,7 +30,8 @@ setInterval(gameLoop, 1000 / 60);
 function addPlayer(id) {
   const loc = [Math.random() * WORLD_SIZE, Math.random() * WORLD_SIZE];
   console.log(`new player ${id} joined at ${loc}`);
-  state.players[id] = { id, loc, v: [0, 0], infection: 0 };
+  const infected = Object.keys(state.players).length % 2 > 0;
+  state.players[id] = { id, loc, v: [0, 0], infected, infection: 0 };
 }
 
 function movePlayer(id, cmd) {
@@ -56,11 +57,16 @@ function updatePlayer(player) {
 
 function getNextInfectionScore(player) {
   const infectionRaise = Object.entries(state.players)
+    // can't self-infect
     .filter(([otherId, _]) => otherId !== player.id)
+    // only infected players can pass it on
+    .filter(([_, otherPlayer]) => otherPlayer.infected)
+    // map to distances
     .map(([_, otherPlayer]) => {
       return abs(add(otherPlayer.loc, multiply(player.loc, -1)));
     })
     .filter((distance) => distance < INFECTION_THRESHOLD_DISTANCE)
+    // linear infection rate increase below threshold
     .reduce((tot, distance) => {
       return INFECTION_SPEED * (INFECTION_THRESHOLD_DISTANCE - distance);
     }, 0);
