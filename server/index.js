@@ -4,6 +4,7 @@ const uuid = require("uuid");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const config = require("../config");
+const { abs, add, multiply, linear } = require("./math");
 
 app.get("/debug", function (req, res) {
   res.sendFile(__dirname + "/index.html");
@@ -102,14 +103,6 @@ function updatePlayer(player) {
   return player;
 }
 
-// linear scaling
-function linear(x, x1 = 0, x2 = 1, y1 = 0, y2 = 1) {
-  if (x <= x1) return y1;
-  if (x >= x2) return y2;
-  const m = (y2 - y1) / (x2 - x1);
-  return m * x + y1 - m * x1;
-}
-
 function decreaseHealth(player) {
   const healthReduce = player.infected
     ? config.health.reduceInfected
@@ -178,18 +171,6 @@ function getNextInfectionScore(player) {
     player.infection + infectionRaise - config.infection.reduce
   );
   return newInfectionScore;
-}
-
-function add(v1, v2) {
-  return [v1[0] + v2[0], v1[1] + v2[1]];
-}
-
-function abs(v) {
-  return Math.sqrt(v[0] ** 2 + v[1] ** 2);
-}
-
-function multiply(v, skalar) {
-  return v.map((i) => i * skalar);
 }
 
 function getNextVelocity(v, cmd) {
