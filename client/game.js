@@ -164,7 +164,7 @@ export default class Game extends Application {
 
   handlePlayersUpdate(players) {
     Object.entries(players).forEach(
-      ([id, { loc, infected, infection, health }]) => {
+      ([id, { loc, infected, dead, infection, health }]) => {
         if (id == this.playerId) {
           this.setCenter(loc);
         }
@@ -173,6 +173,7 @@ export default class Game extends Application {
 
         player.setPosition(loc);
         player.setInfectedState(infected);
+        player.setDeadState(dead);
         player.setText(infection, health);
       }
     );

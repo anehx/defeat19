@@ -8,12 +8,13 @@ export class PlayerCircle extends Graphics {
     super();
 
     this.infected = false;
+    this.dead = false;
 
     this.draw();
   }
 
   get color() {
-    return this.infected ? 0xff0000 : 0x00ff00;
+    return this.dead ? 0xe5e5e5 : this.infected ? 0xff0000 : 0x00ff00;
   }
 
   draw() {
@@ -53,6 +54,13 @@ export default class Player {
   setInfectedState(state) {
     if (this.circle.infected !== state) {
       this.circle.infected = state;
+      this.circle.draw();
+    }
+  }
+
+  setDeadState(state) {
+    if (this.circle.dead !== state) {
+      this.circle.dead = state;
       this.circle.draw();
     }
   }
