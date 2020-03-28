@@ -52,6 +52,6 @@ export default class Player {
   }
 
   setInfectionLevel(percentage) {
-    this.text.text = `${percentage}%`;
+    this.text.text = `${Math.ceil(percentage)}%`;
   }
 }

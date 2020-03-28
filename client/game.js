@@ -15,6 +15,9 @@ export default class Game extends Application {
       resolution: 1
     });
 
+    this.stage.position.x = this.renderer.width / 2;
+    this.stage.position.y = this.renderer.height / 2;
+
     this.boundaries = {
       width: window.innerWidth,
       height: window.innerHeight
@@ -46,7 +49,8 @@ export default class Game extends Application {
   }
 
   setCenter([x, y]) {
-    this.center = { x, y };
+    this.stage.pivot.x = x;
+    this.stage.pivot.y = y;
   }
 
   addResizeListeners() {
