@@ -127,7 +127,7 @@ export default class Game extends Application {
     document.addEventListener("mousemove", ({ clientX, clientY }) => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const max = Math.min(width, height) * 0.2;
+      const max = Math.min(width, height) * 0.5;
 
       const pxFromCenter = {
         x: Math.max(Math.min(clientX - width / 2, max), -1 * max),
@@ -169,7 +169,7 @@ export default class Game extends Application {
 
   handlePlayersUpdate(players) {
     Object.entries(players).forEach(
-      ([id, { loc, infected, dead, infection, health }]) => {
+      ([id, { loc, state, infection, health }]) => {
         if (id == this.playerId) {
           this.setCenter(loc);
         }
@@ -177,8 +177,7 @@ export default class Game extends Application {
         const player = this.getPlayer(id);
 
         player.setPosition(loc);
-        player.setInfectedState(infected);
-        player.setDeadState(dead);
+        player.setState(state);
         player.setInfectionLevel(infection);
         player.setHealthLevel(health);
       }

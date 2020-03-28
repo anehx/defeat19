@@ -15,7 +15,17 @@ export class PlayerCircle extends Graphics {
   }
 
   get color() {
-    return this.dead ? 0xe5e5e5 : this.infected ? 0xff0000 : 0x00ff00;
+    switch (this.state) {
+      case "dead":
+        return 0xe5e5e5;
+      case "infected":
+        return 0xff0000;
+      case "immune":
+        return 0x00ffff;
+      case "healthy":
+      default:
+        return 0x00ff00;
+    }
   }
 
   draw() {
@@ -50,16 +60,9 @@ export default class Player {
     this.infection.y = y - config.player.size * 4;
   }
 
-  setInfectedState(state) {
-    if (this.circle.infected !== state) {
-      this.circle.infected = state;
-      this.circle.draw();
-    }
-  }
-
-  setDeadState(state) {
-    if (this.circle.dead !== state) {
-      this.circle.dead = state;
+  setState(state) {
+    if (this.circle.state !== state) {
+      this.circle.state = state;
       this.circle.draw();
     }
   }
