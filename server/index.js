@@ -12,23 +12,32 @@ app.get("/debug", function (req, res) {
 
 app.use(express.static(__dirname + "/../client/dist/"));
 
-const state = {
+const INFECTED = "infected";
+const HEALTHY = "healthy";
+const IMMUNE = "immune";
+const DEAD = "dead";
+
+const game = {
   players: {},
   items: {},
 };
 
 function gameLoop() {
-  Object.entries(state.players).map(([id, player]) => {
-    state.players[id] = updatePlayer(player);
-  });
+  setTimeout(gameLoop, 1000 / config.simulationSpeed);
+  // console.time("game");
 
-  io.emit("update", state);
+  Object.entries(game.players).map(([id, player]) => {
+    game.players[id] = updatePlayer(player);
+  });
+  // console.timeEnd("game");
+
+  io.emit("update", game);
 }
 
 function spawnItem() {
-  if (Object.keys(state.items).length <= getLivingPlayerCount()) {
+  if (Object.keys(game.items).length <= getLivingPlayerCount()) {
     const id = uuid.v4();
-    state.items[id] = { id, loc: getRandomLoc() };
+    game.items[id] = { id, loc: getRandomLoc() };
   }
   const spawnMs =
     config.item.spawnFrequency * 1000 * Math.max(1, getLivingPlayerCount());
@@ -39,7 +48,7 @@ function spawnItem() {
   );
 }
 
-setInterval(gameLoop, 1000 / config.simulationSpeed);
+gameLoop();
 spawnItem();
 
 function getRandomLoc() {
@@ -47,25 +56,27 @@ function getRandomLoc() {
 }
 
 function getLivingPlayerCount() {
-  return Object.values(state.players).filter((player) => !player.dead).length;
+  return Object.values(game.players).filter((player) => !player.dead).length;
 }
 
 function spawnPlayer(id) {
   const loc = getRandomLoc();
-  const infected = getLivingPlayerCount() < 1;
-  state.players[id] = {
+
+  // patient 0
+  const state = getLivingPlayerCount() < 1 ? INFECTED : HEALTHY;
+
+  game.players[id] = {
     id,
     loc,
     v: [0, 0],
-    infected,
-    infection: infected ? 100 : 0,
+    state,
+    infection: state === INFECTED ? 100 : 0,
     health: 100,
-    dead: false,
   };
 }
 
 function movePlayer(id, cmd) {
-  state.players[id].v = getNextVelocity(state.players[id].v, cmd);
+  game.players[id].v = getNextVelocity(game.players[id].v, cmd);
 }
 
 function isWithinBoundary(coord) {
@@ -91,35 +102,34 @@ function between(value, min, max) {
 }
 
 function updatePlayer(player) {
-  if (player.dead) {
+  if (player.state === DEAD) {
     return player;
   }
+
   boundaryControl(player);
   collectItems(player);
   decreaseHealth(player);
-  if (!player.infected) {
-    player.infection = Math.min(getNextInfectionScore(player), 100);
-    player.infected = player.infection === 100;
-  }
+  handleInfection(player);
+
   return player;
 }
 
 function decreaseHealth(player) {
-  const healthReduce = player.infected
-    ? config.health.reduceInfected
-    : config.health.reduceHealthy;
+  const healthReduce =
+    player.state === INFECTED
+      ? config.health.reduceWhenInfected
+      : config.health.reduceWhenHealthy;
 
   player.health -= healthReduce / config.simulationSpeed;
 
   if (player.health <= 0) {
-    player.dead = true;
-    player.infected = false;
+    player.state = DEAD;
     player.health = 0;
   }
 }
 
 function collectItems(player) {
-  const itemsInRange = Object.values(state.items)
+  const itemsInRange = Object.values(game.items)
     .map(({ id, loc }) => ({ id, distance: distance(loc, player.loc) }))
     .filter(({ distance }) => distance <= config.player.size * 2);
 
@@ -132,34 +142,50 @@ function collectItems(player) {
   }
 
   itemsInRange.forEach(({ id }) => {
-    delete state.items[id];
+    delete game.items[id];
   });
 }
 
-function getNextInfectionScore(player) {
-  const infectionRaise = Object.values(state.players)
-    .filter((other) => other.id !== player.id)
-    .filter((other) => other.infected)
-    .map((otherPlayer) => distance(otherPlayer.loc, player.loc))
-    .filter((distance) => distance < config.infection.thresholdDistance)
-    // linear infection rate increase below threshold
-    .reduce((total, distance) => {
-      return (
-        total +
-        linear(
-          distance,
-          config.infection.thresholdDistance / 2,
-          config.infection.thresholdDistance,
-          config.infection.speed,
-          0
-        )
-      );
-    }, 0);
+function handleInfection(player) {
+  const infectionRaise =
+    player.state === INFECTED
+      ? 0
+      : Object.values(game.players)
+          .filter((other) => other.id !== player.id)
+          .filter((other) => other.state === INFECTED)
+          .map((otherPlayer) => distance(otherPlayer.loc, player.loc))
+          .filter((distance) => distance < config.infection.thresholdDistance)
+          // linear infection rate increase below threshold
+          .reduce((total, distance) => {
+            return (
+              total +
+              linear(
+                distance,
+                config.infection.thresholdDistance / 2,
+                config.infection.thresholdDistance,
+                config.infection.speed,
+                0
+              )
+            );
+          }, 0);
 
-  return Math.max(
-    0,
-    player.infection + infectionRaise - config.infection.reduce
-  );
+  const infectionReduce =
+    player.state === INFECTED
+      ? config.infection.reduceWhenInfected
+      : config.infection.reduceWhenHealthy;
+
+  const newInfectionScore =
+    player.infection +
+    infectionRaise -
+    infectionReduce / config.simulationSpeed;
+
+  player.infection = Math.max(0, Math.min(newInfectionScore, 100));
+
+  if (player.state === INFECTED && player.infection === 0) {
+    player.state = IMMUNE;
+  } else if (!player.state === HEALTHY && player.infection >= 100) {
+    player.state = INFECTED;
+  }
 }
 
 function getNextVelocity(v, cmd) {
@@ -189,11 +215,10 @@ io.on("connection", function (socket) {
 
   socket.on("move", (cmd) => {
     movePlayer(socket.id, cmd);
-    io.emit("update", state);
   });
 
   socket.on("disconnect", function () {
-    delete state.players[socket.id];
+    delete game.players[socket.id];
   });
 });
 

@@ -16,13 +16,14 @@ module.exports = {
   },
   health: {
     itemIncrease: 20,
-    reduceHealthy: 1,
-    reduceInfected: 1.5,
+    reduceWhenHealthy: 1,
+    reduceWhenInfected: 1.5,
   },
   infection: {
     thresholdDistance: 150,
     speed: 1,
-    reduce: 0.1,
+    reduceWhenHealthy: 5,
+    reduceWhenInfected: 1,
   },
   item: {
     spawnFrequency: 10,
