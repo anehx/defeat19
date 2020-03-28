@@ -9,9 +9,9 @@ app.get("/", function (req, res) {
 const WORLD_SIZE = 1000;
 const MAX_SPEED = 5;
 const ACCELERATION = 0.5;
-const INFECTION_THRESHOLD_DISTANCE = 100;
-const INFECTION_SPEED = 0.1;
-const INFECTION_REDUCE = 0.01;
+const INFECTION_THRESHOLD_DISTANCE = 150;
+const INFECTION_SPEED = 1;
+const INFECTION_REDUCE = 0.02;
 
 const state = {
   players: {},
@@ -75,6 +75,14 @@ function updatePlayer(player) {
   return player;
 }
 
+// linear scaling
+function linear(x, x1 = 0, x2 = 1, y1 = 0, y2 = 1) {
+  if (x <= x1) return y1;
+  if (x >= x2) return y2;
+  const m = (y2 - y1) / (x2 - x1);
+  return m * x + y1 - m * x1;
+}
+
 function getNextInfectionScore(player) {
   const infectionRaise = Object.entries(state.players)
     // can't self-infect
@@ -88,7 +96,16 @@ function getNextInfectionScore(player) {
     .filter((distance) => distance < INFECTION_THRESHOLD_DISTANCE)
     // linear infection rate increase below threshold
     .reduce((tot, distance) => {
-      return INFECTION_SPEED * (INFECTION_THRESHOLD_DISTANCE - distance);
+      return (
+        tot +
+        linear(
+          distance,
+          INFECTION_THRESHOLD_DISTANCE / 2,
+          INFECTION_THRESHOLD_DISTANCE,
+          INFECTION_SPEED,
+          0
+        )
+      );
     }, 0);
 
   const newInfectionScore = Math.max(
