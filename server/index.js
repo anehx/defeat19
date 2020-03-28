@@ -26,7 +26,8 @@ function gameLoop() {
 
 function spawnItem() {
   state.items[uuid.v4()] = { loc: getRandomLoc() };
-  const spawnMs = config.item.spawnFrequency * 1000;
+  const spawnMs =
+    config.item.spawnFrequency * 1000 * Object.keys(state.players).length;
   setTimeout(
     spawnItem,
     spawnMs + linear(Math.random(), 0, 1, -0.3 * spawnMs, 0.3 * spawnMs)
