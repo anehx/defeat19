@@ -12,14 +12,30 @@ const state = {
   players: {},
 };
 
+function gameLoop() {
+  Object.entries(state.players).map(([id, player]) => {
+    state.players[id] = updatePlayer(player)
+  })
+}
+
+setInterval(gameLoop, 33);
+
 function addPlayer(id) {
   const loc = [Math.random(WORLD_SIZE), Math.random(WORLD_SIZE)];
   console.log(`new player ${id} joined at ${loc}`);
-  state.players[id] = { loc };
+  state.players[id] = { loc, v = [0,0] };
 }
 
 function movePlayer(id, cmd) {
   state.players[id].loc = getNextLoc(state.players[id].loc, cmd);
+}
+
+function updatePlayer(player) {
+  return add(player.loc, player.v
+}
+
+function add(v1, v2) {
+  return [v1[0] + v2[0], v1[1] + v2[1]]
 }
 
 function getNextLoc(loc, cmd) {
