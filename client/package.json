@@ -1,0 +1,21 @@
+{
+  "name": "agar-19",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:anehx/agar-19",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "browserslist": "last 2 firefox version, last 2 chrome version",
+  "dependencies": {
+    "pixi.js": "^5.2.1",
+    "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "prettier": "^2.0.2"
+  }
+}
