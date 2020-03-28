@@ -115,6 +115,7 @@ function collectItems(player) {
 
   if (itemsInRange.length) {
     console.log("eating", itemsInRange);
+    player.health += config.health.itemIncrease * itemsInRange.length;
   }
 
   itemsInRange.forEach(([id, _]) => {
