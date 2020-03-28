@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const uuid = require("uuid");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const config = require("../config");
@@ -12,6 +13,7 @@ app.use(express.static(__dirname + "/../client/dist/"));
 
 const state = {
   players: {},
+  items: {},
 };
 
 function gameLoop() {
@@ -22,13 +24,19 @@ function gameLoop() {
   io.emit("update", state);
 }
 
+function spawnItem() {
+  state.items[uuid.v4()] = { loc: getRandomLoc() };
+}
+
 setInterval(gameLoop, 1000 / 60);
+setInterval(spawnItem, config.item.spawnFrequency * 1000);
+
+function getRandomLoc() {
+  return [Math.random() * config.world.size, Math.random() * config.world.size];
+}
 
 function addPlayer(id) {
-  const loc = [
-    Math.random() * config.world.size,
-    Math.random() * config.world.size,
-  ];
+  const loc = getRandomLoc();
   console.log(`new player ${id} joined at ${loc}`);
   const infected = Object.keys(state.players).length % 2 > 0;
   state.players[id] = {
