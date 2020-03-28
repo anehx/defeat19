@@ -9,22 +9,41 @@ app.get("/", function (req, res) {
 const WORLD_SIZE = 10000;
 
 const state = {
-  players: [],
+  players: {},
 };
 
-addPlayer = () => {
+function addPlayer(id) {
   const loc = [Math.random(WORLD_SIZE), Math.random(WORLD_SIZE)];
-  console.log("new player joined at: ", loc);
-  state.players.push({ loc });
-};
+  console.log(`new player ${id} joined at ${loc}`);
+  state.players[id] = { loc };
+}
+
+function movePlayer(id, cmd) {
+  state.players[id].loc = getNextLoc(state.players[id].loc, cmd);
+}
+
+function getNextLoc(loc, cmd) {
+  switch (cmd) {
+    case "up":
+      return [loc[0], loc[1] + 1];
+    case "down":
+      return [loc[0], loc[1] - 1];
+    case "left":
+      return [loc[0] - 1, loc[1]];
+    case "right":
+      return [loc[0] + 1, loc[1]];
+  }
+}
 
 io.on("connection", function (socket) {
-  addPlayer();
+  addPlayer(socket.id);
 
-  socket.emit("state", state);
+  socket.emit("update", state);
 
   socket.on("move", (cmd) => {
     console.log("received move event", cmd);
+    movePlayer(socket.id, cmd);
+    io.emit("update", state);
   });
 
   socket.on("disconnect", function () {

@@ -16,9 +16,30 @@
   <body>
     <h1>Welcome to agar19</h1>
 
+    <pre id="state"></pre>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
-            var socket = io();
+        var socket = io();
+
+        socket.on("update", (state) => {
+           document.getElementById("state").textContent = JSON.stringify(state, undefined, 2);
+        })
+
+        document.addEventListener('keydown', function(event) {
+            if(event.keyCode == 37) {
+                socket.emit("move", "left");
+            }
+            else if(event.keyCode == 39) {
+                socket.emit("move", "right");
+            }
+            else if(event.keyCode == 38) {
+                socket.emit("move", "up");
+            }
+            else if(event.keyCode == 40) {
+                socket.emit("move", "down");
+            }
+        });
     </script>
   </body>
 </html>
