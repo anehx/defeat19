@@ -27,10 +27,12 @@ function gameLoop() {
 function spawnItem() {
   state.items[uuid.v4()] = { loc: getRandomLoc() };
   const spawnMs =
-    config.item.spawnFrequency * 1000 * Object.keys(state.players).length;
+    config.item.spawnFrequency *
+    1000 *
+    Object.keys(state.players.filter((player) => !player.dead)).length;
   setTimeout(
     spawnItem,
-    spawnMs + linear(Math.random(), 0, 1, -0.3 * spawnMs, 0.3 * spawnMs)
+    spawnMs + linear(Math.random(), 0, 1, -0.2 * spawnMs, 0.2 * spawnMs)
   );
 }
 
@@ -108,6 +110,7 @@ function decreaseHealth(player) {
   player.health -= config.health.reduce / config.simulationSpeed;
   if (player.health < 0) {
     player.dead = true;
+    player.infected = false;
     player.health = 0;
   }
 }
