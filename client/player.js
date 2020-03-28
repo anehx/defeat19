@@ -19,6 +19,9 @@ export class PlayerCircle extends Graphics {
     this.beginFill(this.color);
     this.drawCircle(0, 0, 20);
     this.endFill();
+
+    this.lineStyle(1, 0xff0000, 0.2);
+    this.drawCircle(0, 0, 150);
   }
 }
 
