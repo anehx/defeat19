@@ -127,7 +127,7 @@ export default class Game extends Application {
     document.addEventListener("mousemove", ({ clientX, clientY }) => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const max = Math.min(width, height) * 0.3;
+      const max = Math.min(width, height) * 0.2;
 
       const pxFromCenter = {
         x: Math.max(Math.min(clientX - width / 2, max), -1 * max),
@@ -187,7 +187,8 @@ export default class Game extends Application {
       .filter((key) => !Object.keys(players).includes(key))
       .forEach((key) => {
         this.stage.removeChild(this.players[key].circle);
-        this.stage.removeChild(this.players[key].text);
+        this.stage.removeChild(this.players[key].infection);
+        this.stage.removeChild(this.players[key].health);
         delete this.players[key];
       });
   }
