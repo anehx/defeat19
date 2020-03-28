@@ -145,20 +145,22 @@ function collectItems(player) {
 }
 
 function getNextInfectionScore(player) {
-  const infectionRaise = Object.entries(state.players)
+  const infectionRaise = Object.values(state.players)
     // can't self-infect
-    .filter(([otherId, _]) => otherId !== player.id)
+    .filter((other) => other.id !== player.id)
     // only infected players can pass it on
-    .filter(([_, otherPlayer]) => otherPlayer.infected)
+    .filter((other) => other.infected)
     // map to distances
-    .map(([_, otherPlayer]) => {
-      return abs(add(otherPlayer.loc, multiply(player.loc, -1)));
-    })
+    .map((otherPlayer) => abs(add(otherPlayer.loc, multiply(player.loc, -1))))
     .filter((distance) => distance < config.infection.thresholdDistance)
+    .map((distance) => {
+      console.log(distance);
+      return distance;
+    })
     // linear infection rate increase below threshold
-    .reduce((tot, distance) => {
+    .reduce((total, distance) => {
       return (
-        tot +
+        total +
         linear(
           distance,
           config.infection.thresholdDistance / 2,
