@@ -26,7 +26,8 @@ module.exports = {
     reduceWhenInfected: 1,
   },
   item: {
-    spawnFrequency: 10,
+    // spawn an item around every x seconds
+    spawnDelay: 6,
     size: 10,
   },
 };

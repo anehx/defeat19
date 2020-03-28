@@ -40,7 +40,7 @@ function spawnItem() {
     game.items[id] = { id, loc: getRandomLoc() };
   }
   const spawnMs =
-    config.item.spawnFrequency * 1000 * Math.max(1, getLivingPlayerCount());
+    config.item.spawnDelay * 1000 * Math.max(1, getLivingPlayerCount());
 
   setTimeout(
     spawnItem,
