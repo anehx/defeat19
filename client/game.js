@@ -5,6 +5,8 @@ import Player from "./player";
 
 const { Application, Graphics } = PIXI;
 
+const WORLD_SIZE = 2000;
+
 export default class Game extends Application {
   constructor() {
     super({
@@ -17,8 +19,22 @@ export default class Game extends Application {
 
     const border = new Graphics();
     border.lineStyle(5, 0x000000);
-    border.drawRect(0, 0, 2000, 2000);
+    border.drawRect(0, 0, WORLD_SIZE, WORLD_SIZE);
     this.stage.addChild(border);
+
+    for (let x = 0; x < 10; x++) {
+      for (let y = 0; y < 10; y++) {
+        const grid = new Graphics();
+        grid.lineStyle(1, 0x000000);
+        grid.drawRect(
+          (WORLD_SIZE / 10) * x,
+          (WORLD_SIZE / 10) * y,
+          WORLD_SIZE / 10,
+          WORLD_SIZE / 10
+        );
+        this.stage.addChild(grid);
+      }
+    }
 
     this.stage.position.x = this.renderer.width / 2;
     this.stage.position.y = this.renderer.height / 2;
