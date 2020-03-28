@@ -2,21 +2,23 @@ const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
 const WORLD_SIZE = 700;
 const MAX_SPEED = 10;
 const ACCELERATION = 4;
+const INFECTION_THRESHOLD_DISTANCE = 20;
+const INFECTION_SPEED = 0.1;
+const INFECTION_REDUCE = 0.01;
 
 const state = {
-  players: {}
+  players: {},
 };
 
 function gameLoop() {
   Object.entries(state.players).map(([id, player]) => {
-    console.log("update Player", player);
     state.players[id] = updatePlayer(player);
   });
 
@@ -28,7 +30,7 @@ setInterval(gameLoop, 1000 / 60);
 function addPlayer(id) {
   const loc = [Math.random() * WORLD_SIZE, Math.random() * WORLD_SIZE];
   console.log(`new player ${id} joined at ${loc}`);
-  state.players[id] = { loc, v: [0, 0], infection: 0 };
+  state.players[id] = { id, loc, v: [0, 0], infection: 0 };
 }
 
 function movePlayer(id, cmd) {
@@ -45,7 +47,29 @@ function between(value, min, max) {
 
 function updatePlayer(player) {
   const loc = boundary(add(player.loc, player.v));
+  if (!player.infected) {
+    player.infection = Math.min(getNextInfectionScore(player), 100);
+    player.infected = player.infection === 100;
+  }
   return { ...player, loc };
+}
+
+function getNextInfectionScore(player) {
+  const infectionRaise = Object.entries(state.players)
+    .filter(([otherId, _]) => otherId !== player.id)
+    .map(([_, otherPlayer]) => {
+      return abs(add(otherPlayer.loc, multiply(player.loc, -1)));
+    })
+    .filter((distance) => distance < INFECTION_THRESHOLD_DISTANCE)
+    .reduce((tot, distance) => {
+      return INFECTION_SPEED * (INFECTION_THRESHOLD_DISTANCE - distance);
+    }, 0);
+
+  const newInfectionScore = Math.max(
+    0,
+    player.infection + infectionRaise - INFECTION_REDUCE
+  );
+  return newInfectionScore;
 }
 
 function add(v1, v2) {
@@ -57,7 +81,7 @@ function abs(v) {
 }
 
 function multiply(v, skalar) {
-  return v.map(i => i * skalar);
+  return v.map((i) => i * skalar);
 }
 
 function getNextVelocity(v, cmd) {
@@ -78,23 +102,23 @@ function getNextVelocity(v, cmd) {
   return speed < MAX_SPEED ? newV : multiply(newV, MAX_SPEED / speed);
 }
 
-io.on("connection", function(socket) {
+io.on("connection", function (socket) {
   addPlayer(socket.id);
 
   socket.emit("hello", socket.id);
 
-  socket.on("move", cmd => {
+  socket.on("move", (cmd) => {
     console.log("received move event", cmd);
     movePlayer(socket.id, cmd);
     io.emit("update", state);
   });
 
-  socket.on("disconnect", function() {
+  socket.on("disconnect", function () {
     console.log("user disconnected");
     delete state.players[socket.id];
   });
 });
 
-http.listen(3000, function() {
+http.listen(3000, function () {
   console.log("listening on *:3000");
 });
