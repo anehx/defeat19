@@ -188,20 +188,8 @@ function handleInfection(player) {
   }
 }
 
-function getNextVelocity(v, cmd) {
-  const _getV = (v, cmd) => {
-    switch (cmd) {
-      case "up":
-        return add(v, [0, -1 * config.world.acceleration]);
-      case "down":
-        return add(v, [0, config.world.acceleration]);
-      case "left":
-        return add(v, [-1 * config.world.acceleration, 0]);
-      case "right":
-        return add(v, [config.world.acceleration, 0]);
-    }
-  };
-  const newV = _getV(v, cmd);
+function getNextVelocity(currentV, mouseDir) {
+  const newV = add(currentV, mouseDir);
   const speed = abs(newV);
   return speed < config.world.maxSpeed
     ? newV

@@ -194,7 +194,9 @@ export default class Game extends Application {
   }
 
   sendKeyEvents() {
-    this.socket.emit("move", this.velocity);
+    if (this.velocity) {
+      this.socket.emit("move", [this.velocity.x, this.velocity.y]);
+    }
 
     setTimeout(() => this.sendKeyEvents(), 1000 / 10);
   }
