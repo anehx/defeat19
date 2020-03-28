@@ -6,7 +6,8 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
-const WORLD_SIZE = 10000;
+const WORLD_SIZE = 10;
+const MAX_SPEED = 1;
 
 const state = {
   players: {},
@@ -26,7 +27,7 @@ setInterval(gameLoop, 1000);
 function addPlayer(id) {
   const loc = [Math.random() * WORLD_SIZE, Math.random() * WORLD_SIZE];
   console.log(`new player ${id} joined at ${loc}`);
-  state.players[id] = { loc, v: [0, 0] };
+  state.players[id] = { loc, v: [0, 0], infection: 0 };
 }
 
 function movePlayer(id, cmd) {
@@ -50,17 +51,30 @@ function add(v1, v2) {
   return [v1[0] + v2[0], v1[1] + v2[1]];
 }
 
+function abs(v) {
+  return Math.sqrt(v[0] ** 2 + v[1] ** 2);
+}
+
+function multiply(v, skalar) {
+  return v.map((i) => i * skalar);
+}
+
 function getNextVelocity(v, cmd) {
-  switch (cmd) {
-    case "up":
-      return add(v, [0, 0.1]);
-    case "down":
-      return add(v, [0, -0.1]);
-    case "left":
-      return add(v, [-0.1, 0]);
-    case "right":
-      return add(v, [0.1, 0]);
-  }
+  const _getV = (v, cmd) => {
+    switch (cmd) {
+      case "up":
+        return add(v, [0, 0.1]);
+      case "down":
+        return add(v, [0, -0.1]);
+      case "left":
+        return add(v, [-0.1, 0]);
+      case "right":
+        return add(v, [0.1, 0]);
+    }
+  };
+  const newV = _getV(v, cmd);
+  const speed = abs(newV);
+  return speed < MAX_SPEED ? newV : multiply(newV, MAX_SPEED / speed);
 }
 
 io.on("connection", function (socket) {
