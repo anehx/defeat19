@@ -2,19 +2,13 @@ const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
+const config = require("../config");
 
 app.get("/debug", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
 app.use(express.static(__dirname + "/../client/dist/"));
-
-const WORLD_SIZE = 2000;
-const MAX_SPEED = 7;
-const ACCELERATION = 1;
-const INFECTION_THRESHOLD_DISTANCE = 150;
-const INFECTION_SPEED = 1;
-const INFECTION_REDUCE = 0.02;
 
 const state = {
   players: {},
@@ -31,7 +25,10 @@ function gameLoop() {
 setInterval(gameLoop, 1000 / 60);
 
 function addPlayer(id) {
-  const loc = [Math.random() * WORLD_SIZE, Math.random() * WORLD_SIZE];
+  const loc = [
+    Math.random() * config.world.size,
+    Math.random() * config.world.size,
+  ];
   console.log(`new player ${id} joined at ${loc}`);
   const infected = Object.keys(state.players).length % 2 > 0;
   state.players[id] = {
@@ -48,7 +45,7 @@ function movePlayer(id, cmd) {
 }
 
 function isWithinBoundary(coord) {
-  return 0 <= coord && coord <= WORLD_SIZE;
+  return 0 <= coord && coord <= config.world.size;
 }
 
 function boundaryControl(player) {
@@ -60,8 +57,8 @@ function boundaryControl(player) {
     player.v[1] = 0;
   }
   player.loc = [
-    between(newPosition[0], 0, WORLD_SIZE),
-    between(newPosition[1], 0, WORLD_SIZE),
+    between(newPosition[0], 0, config.world.size),
+    between(newPosition[1], 0, config.world.size),
   ];
 }
 
@@ -96,16 +93,16 @@ function getNextInfectionScore(player) {
     .map(([_, otherPlayer]) => {
       return abs(add(otherPlayer.loc, multiply(player.loc, -1)));
     })
-    .filter((distance) => distance < INFECTION_THRESHOLD_DISTANCE)
+    .filter((distance) => distance < config.infection.thresholdDistance)
     // linear infection rate increase below threshold
     .reduce((tot, distance) => {
       return (
         tot +
         linear(
           distance,
-          INFECTION_THRESHOLD_DISTANCE / 2,
-          INFECTION_THRESHOLD_DISTANCE,
-          INFECTION_SPEED,
+          config.infection.thresholdDistance / 2,
+          config.infection.thresholdDistance,
+          config.infection.speed,
           0
         )
       );
@@ -113,7 +110,7 @@ function getNextInfectionScore(player) {
 
   const newInfectionScore = Math.max(
     0,
-    player.infection + infectionRaise - INFECTION_REDUCE
+    player.infection + infectionRaise - config.infection.reduce
   );
   return newInfectionScore;
 }
@@ -134,18 +131,20 @@ function getNextVelocity(v, cmd) {
   const _getV = (v, cmd) => {
     switch (cmd) {
       case "up":
-        return add(v, [0, -1 * ACCELERATION]);
+        return add(v, [0, -1 * config.world.acceleration]);
       case "down":
-        return add(v, [0, ACCELERATION]);
+        return add(v, [0, config.world.acceleration]);
       case "left":
-        return add(v, [-1 * ACCELERATION, 0]);
+        return add(v, [-1 * config.world.acceleration, 0]);
       case "right":
-        return add(v, [ACCELERATION, 0]);
+        return add(v, [config.world.acceleration, 0]);
     }
   };
   const newV = _getV(v, cmd);
   const speed = abs(newV);
-  return speed < MAX_SPEED ? newV : multiply(newV, MAX_SPEED / speed);
+  return speed < config.world.maxSpeed
+    ? newV
+    : multiply(newV, config.world.maxSpeed / speed);
 }
 
 io.on("connection", function (socket) {

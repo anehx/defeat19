@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import config from "../config";
 
 const { Graphics, Text } = PIXI;
 
@@ -17,11 +18,11 @@ export class PlayerCircle extends Graphics {
 
   draw() {
     this.beginFill(this.color);
-    this.drawCircle(0, 0, 20);
+    this.drawCircle(0, 0, config.player.size);
     this.endFill();
 
-    this.lineStyle(1, 0xff0000, 0.2);
-    this.drawCircle(0, 0, 150);
+    this.lineStyle(1, 0xff0000, 0.5);
+    this.drawCircle(0, 0, config.infection.thresholdDistance);
   }
 }
 
@@ -43,8 +44,8 @@ export default class Player {
     this.circle.x = x;
     this.circle.y = y;
 
-    this.text.x = x + 20;
-    this.text.y = y - 40;
+    this.text.x = x + config.player.size;
+    this.text.y = y - config.player.size * 2;
   }
 
   setInfectedState(state) {

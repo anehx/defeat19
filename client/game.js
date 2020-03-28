@@ -1,11 +1,10 @@
 import * as PIXI from "pixi.js";
 import io from "socket.io-client";
 
+import config from "../config";
 import Player from "./player";
 
 const { Application, Graphics } = PIXI;
-
-const WORLD_SIZE = 2000;
 
 export default class Game extends Application {
   constructor() {
@@ -19,18 +18,18 @@ export default class Game extends Application {
 
     const border = new Graphics();
     border.lineStyle(5, 0x000000);
-    border.drawRect(0, 0, WORLD_SIZE, WORLD_SIZE);
+    border.drawRect(0, 0, config.world.size, config.world.size);
     this.stage.addChild(border);
 
-    for (let x = 0; x < 10; x++) {
-      for (let y = 0; y < 10; y++) {
+    for (let x = 0; x < config.world.grid; x++) {
+      for (let y = 0; y < config.world.grid; y++) {
         const grid = new Graphics();
         grid.lineStyle(1, 0x000000);
         grid.drawRect(
-          (WORLD_SIZE / 10) * x,
-          (WORLD_SIZE / 10) * y,
-          WORLD_SIZE / 10,
-          WORLD_SIZE / 10
+          (config.world.size / config.world.grid) * x,
+          (config.world.size / config.world.grid) * y,
+          config.world.size / config.world.grid,
+          config.world.size / config.world.grid
         );
         this.stage.addChild(grid);
       }
@@ -46,7 +45,7 @@ export default class Game extends Application {
 
     this._players = {};
 
-    this.socket = io("http://localhost:3000");
+    this.socket = io(config.serverURL);
 
     this.addResizeListeners();
     this.addKeyboardListeners();
