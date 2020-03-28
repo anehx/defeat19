@@ -28,7 +28,7 @@ function addPlayer(id) {
 }
 
 function movePlayer(id, cmd) {
-  state.players[id].loc = getNextLoc(state.players[id].loc, cmd);
+  state.players[id].v = getNextVelocity(state.players[id].v, cmd);
 }
 
 function updatePlayer(player) {
@@ -39,23 +39,23 @@ function add(v1, v2) {
   return [v1[0] + v2[0], v1[1] + v2[1]];
 }
 
-function getNextLoc(loc, cmd) {
+function getNextVelocity(v, cmd) {
   switch (cmd) {
     case "up":
-      return [loc[0], loc[1] + 1];
+      return add(v, [0, 0.1]);
     case "down":
-      return [loc[0], loc[1] - 1];
+      return add(v, [0, -0.1]);
     case "left":
-      return [loc[0] - 1, loc[1]];
+      return add(v, [-0.1, 0]);
     case "right":
-      return [loc[0] + 1, loc[1]];
+      return add(v, [0.1, 0]);
   }
 }
 
 io.on("connection", function (socket) {
   addPlayer(socket.id);
 
-  socket.emit("update", state);
+  socket.emit("hello", socket.id);
 
   socket.on("move", (cmd) => {
     console.log("received move event", cmd);

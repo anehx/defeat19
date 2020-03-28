@@ -25,6 +25,9 @@
         socket.on("update", (state) => {
            document.getElementById("state").textContent = JSON.stringify(state, undefined, 2);
         })
+        socket.on("hello", (id) => {
+           console.log("hello", id)
+        })
 
         document.addEventListener('keydown', function(event) {
             if(event.keyCode == 37) {
