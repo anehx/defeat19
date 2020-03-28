@@ -8,19 +8,17 @@ export default class Player extends Graphics {
 
     this.id = id;
 
-    this.position = { x: 100, y: 100 };
-
     this.beginFill(this.color);
-    this.drawCircle(this.position.x, this.position.y, this.size);
+    this.drawCircle(0, 0, this.size);
     this.endFill();
   }
 
   get color() {
-    return 0xe74c3c;
+    return 0x000000;
   }
 
   get size() {
-    return 50;
+    return 20;
   }
 
   setPosition([x, y]) {

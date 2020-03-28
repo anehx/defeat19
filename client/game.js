@@ -11,7 +11,7 @@ export default class Game extends Application {
       width: window.innerWidth,
       height: window.innerHeight,
       antialias: true,
-      transparent: false,
+      transparent: true,
       resolution: 1
     });
 

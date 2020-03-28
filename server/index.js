@@ -7,7 +7,8 @@ app.get("/", function(req, res) {
 });
 
 const WORLD_SIZE = 700;
-const MAX_SPEED = 200;
+const MAX_SPEED = 10;
+const ACCELERATION = 4;
 
 const state = {
   players: {}
@@ -63,13 +64,13 @@ function getNextVelocity(v, cmd) {
   const _getV = (v, cmd) => {
     switch (cmd) {
       case "up":
-        return add(v, [0, 0.1]);
+        return add(v, [0, -1 * ACCELERATION]);
       case "down":
-        return add(v, [0, -0.1]);
+        return add(v, [0, ACCELERATION]);
       case "left":
-        return add(v, [-0.1, 0]);
+        return add(v, [-1 * ACCELERATION, 0]);
       case "right":
-        return add(v, [0.1, 0]);
+        return add(v, [ACCELERATION, 0]);
     }
   };
   const newV = _getV(v, cmd);
