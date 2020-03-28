@@ -1,28 +1,57 @@
 import * as PIXI from "pixi.js";
 
-const { Graphics } = PIXI;
+const { Graphics, Text } = PIXI;
 
-export default class Player extends Graphics {
-  constructor(id) {
+export class PlayerCircle extends Graphics {
+  constructor() {
     super();
 
-    this.id = id;
+    this.infected = false;
 
-    this.beginFill(this.color);
-    this.drawCircle(0, 0, this.size);
-    this.endFill();
+    this.draw();
   }
 
   get color() {
-    return 0x000000;
+    return this.infected ? 0xff0000 : 0x00ff00;
   }
 
-  get size() {
-    return 20;
+  draw() {
+    this.beginFill(this.color);
+    this.drawCircle(0, 0, 20);
+    this.endFill();
+  }
+}
+
+export class PlayerText extends Text {
+  constructor() {
+    super("", { fontFamily: "Monospace", fontSize: 15 });
+  }
+}
+
+export default class Player {
+  constructor(id) {
+    this.id = id;
+
+    this.circle = new PlayerCircle();
+    this.text = new PlayerText();
   }
 
   setPosition([x, y]) {
-    this.x = x;
-    this.y = y;
+    this.circle.x = x;
+    this.circle.y = y;
+
+    this.text.x = x + 20;
+    this.text.y = y - 40;
+  }
+
+  setInfectedState(state) {
+    if (this.circle.infected !== state) {
+      this.circle.infected = state;
+      this.circle.draw();
+    }
+  }
+
+  setInfectionLevel(percentage) {
+    this.text.text = `${percentage}%`;
   }
 }
