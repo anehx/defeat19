@@ -12,6 +12,7 @@ module.exports = {
   },
   health: {
     reduce: 3,
+    itemIncrease: 20,
   },
   infection: {
     thresholdDistance: 150,
