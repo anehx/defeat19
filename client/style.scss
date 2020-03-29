@@ -103,6 +103,16 @@ html {
     border-color: $accent-ui-color;
     justify-content: inherit;
     color: $accent-ui-color;
+    display: flex;
+    flex-direction: column;
+
+    #stats-summary {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
     #stats-container {
       max-height: 70vh;

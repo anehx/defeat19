@@ -260,8 +260,27 @@ export default class Game extends Application {
     setTimeout(() => this.sendVelocity(), 1000 / 10);
   }
 
+  updateSummaryStats(players) {
+    const healthySpan = document.querySelector(".summary-healthy");
+    const infectedSpan = document.querySelector(".summary-infected");
+    const immuneSpan = document.querySelector(".summary-immune");
+    const deadSpan = document.querySelector(".summary-dead");
+
+    const summary = Object.values(players).reduce(
+      (acc, cur) => ({ ...acc, [cur.state.state]: acc[cur.state.state] + 1 }),
+      { healthy: 0, infected: 0, immune: 0, dead: 0 }
+    );
+
+    healthySpan.innerText = summary.healthy;
+    infectedSpan.innerText = summary.infected;
+    immuneSpan.innerText = summary.immune;
+    deadSpan.innerText = summary.dead;
+  }
+
   updateStats() {
     if (this.players) {
+      this.updateSummaryStats(this.players);
+
       const stats = document.getElementById("stats");
 
       //Clear out non-existent players
@@ -326,7 +345,7 @@ export default class Game extends Application {
             stateIcon.classList.add("state-icon");
             iconSpan.appendChild(stateIcon);
 
-            const stats = document.querySelector("#stats div");
+            const stats = document.querySelector("#stats-container");
             stats.appendChild(span);
           } else {
             const username = span.querySelector(".username");
