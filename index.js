@@ -17,14 +17,19 @@ const HEALTHY = "healthy";
 const IMMUNE = "immune";
 const DEAD = "dead";
 
+const lastGameLoopRuns = Array(config.simulationSpeed).fill(0);
+
 const game = {
+  perf: {
+    playerCount: 0,
+  },
   players: {},
   items: {},
 };
 
 function gameLoop() {
   setTimeout(gameLoop, 1000 / config.simulationSpeed);
-  // console.time("game");
+  const start = process.hrtime();
 
   Object.entries(game.players).map(([id, player]) => {
     game.players[id] = updatePlayer(player);
@@ -33,9 +38,19 @@ function gameLoop() {
       delete game.players[id];
     }
   });
-  // console.timeEnd("game");
 
   io.emit("update", game);
+  lastGameLoopRuns.push(process.hrtime(start));
+  lastGameLoopRuns.shift();
+}
+
+function perfStats() {
+  game.perf.averageLoopMs =
+    lastGameLoopRuns.reduce((total, curr) => {
+      return total + curr[0] * 1000 + curr[1] / 1e6;
+    }, 0) / config.simulationSpeed;
+
+  game.perf.playerCount = getLivingPlayerCount();
 }
 
 function spawnItem() {
@@ -64,6 +79,7 @@ function getRandomItemType() {
 
 gameLoop();
 spawnItem();
+setInterval(perfStats, 1000);
 
 function getRandomLoc() {
   return [Math.random() * config.world.size, Math.random() * config.world.size];

@@ -9,7 +9,8 @@
     "watch:client": "parcel client/index.html",
     "watch": "concurrently 'yarn:watch:*'",
     "start": "node index.js",
-    "build": "parcel build client/index.html"
+    "build": "parcel build client/index.html",
+    "perf": "artillery run artillery.yml"
   },
   "dependencies": {
     "express": "^4.17.1",
@@ -19,6 +20,7 @@
     "uuid": "^7.0.2"
   },
   "devDependencies": {
+    "artillery": "^1.6.0",
     "concurrently": "^5.1.0",
     "eslint": "^6.8.0",
     "nodemon": "^2.0.2",

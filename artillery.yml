@@ -1,0 +1,22 @@
+config:
+  target: "http://localhost:3000"
+  # target: "https://defeat19.herokuapp.com"
+  phases:
+    - duration: 20  # Test for 20 seconds
+      arrivalRate: 5 # Every second, add x users
+      name: "Ramping up the load"
+scenarios:
+  - name: "basic test"
+    engine: "socketio"
+    flow:
+      - get:
+          url: "/"
+      - emit:
+          channel: "join"
+          data: "fooo"
+      - think: 1
+      - loop:
+        - emit:
+            channel: "move"
+            data: [1,1]
+        - think: 0.1
