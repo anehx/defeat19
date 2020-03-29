@@ -21,6 +21,7 @@ module.exports = {
     reduceWhenInfected: 1.5,
   },
   infection: {
+    spawnRatio: 0.35,
     defaultRadius: 150,
     minimumRadius: 50,
     speed: 1,
