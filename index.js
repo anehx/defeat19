@@ -122,6 +122,7 @@ function spawnPlayer(id, name) {
     state,
     infection: state === INFECTED ? 100 : 0,
     infectionRadius: config.infection.defaultRadius,
+    riskGroup: Math.random() <= config.infection.riskGroupRatio,
     health: 100,
     timeSpawned: new Date().getTime(),
   };
@@ -236,9 +237,10 @@ function handleInfection(player) {
             );
           }, 0);
 
+  const riskFactor = player.riskGroup ? 2 : 1;
   const infectionReduce =
     player.state === INFECTED
-      ? config.infection.reduceWhenInfected
+      ? config.infection.reduceWhenInfected * riskFactor
       : config.infection.reduceWhenHealthy;
 
   const newInfectionScore =

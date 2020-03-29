@@ -24,16 +24,17 @@ module.exports = {
     },
   },
   health: {
-    reduceWhenHealthy: 1,
-    reduceWhenInfected: 1.5,
+    reduceWhenHealthy: 1.5,
+    reduceWhenInfected: 2.5,
   },
   infection: {
+    riskGroupRation: 0.3,
     spawnRatio: 0.35,
     defaultRadius: 150,
     minimumRadius: 50,
     speed: 1,
     reduceWhenHealthy: 5,
-    reduceWhenInfected: 1,
+    reduceWhenInfected: 0.6,
   },
   death: {
     // remove dead players after x seconds
