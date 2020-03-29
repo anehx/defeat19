@@ -2,13 +2,35 @@ import * as PIXI from "pixi.js";
 
 import config from "../config";
 
-const { Graphics } = PIXI;
+const { Graphics, Container } = PIXI;
 
-export default class Avatar extends Graphics {
+export class Zone extends Graphics {
+  draw(radius) {
+    this.clear();
+
+    this.beginFill(0xff0000, 0.2);
+    this.lineStyle(this.radiusWidth, 0xff0000, 0.5);
+    this.drawCircle(0, 0, radius || config.infection.defaultRadius);
+    this.endFill();
+  }
+}
+
+export class Dot extends Graphics {
+  draw(color) {
+    this.clear();
+
+    this.beginFill(color);
+    this.drawCircle(0, 0, config.player.size);
+    this.endFill();
+  }
+}
+
+export default class Avatar extends Container {
   constructor() {
     super();
 
-    this._draw();
+    this.dot = new Dot();
+    this.addChild(this.dot);
   }
 
   get color() {
@@ -25,20 +47,19 @@ export default class Avatar extends Graphics {
     }
   }
 
-  _draw() {
-    this.clear();
-
-    this.beginFill(this.color);
-    this.drawCircle(0, 0, config.player.size);
-    this.endFill();
+  draw() {
+    this.dot.draw(this.color);
 
     if (this.state === "infected") {
-      this.lineStyle(1, 0xff0000, 0.5);
-      this.drawCircle(
-        0,
-        0,
-        this.infectionRadius || config.infection.defaultRadius
-      );
+      if (!this.zone) {
+        this.zone = new Zone();
+        this.addChild(this.zone);
+      }
+
+      this.zone.draw(this.infectionRadius);
+    } else if (this.state !== "infected" && this.zone) {
+      this.removeChild(this.zone);
+      delete this.zone;
     }
   }
 }

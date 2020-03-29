@@ -43,7 +43,7 @@ export default class Player extends Container {
     ) {
       this.avatar.state = data.state;
       this.avatar.infectionRadius = data.infectionRadius;
-      this.avatar._draw();
+      this.avatar.draw();
     }
 
     this.health.draw(data.health);

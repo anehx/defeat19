@@ -190,7 +190,7 @@ export default class Game extends Application {
     Object.keys(this.players)
       .filter((key) => !Object.keys(players).includes(key))
       .forEach((key) => {
-        this.stage.removeChild(this.players[key].player);
+        this.stage.removeChild(this.players[key]);
         delete this.players[key];
       });
   }
