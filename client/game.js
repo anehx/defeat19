@@ -10,27 +10,15 @@ const { Application, Graphics } = PIXI;
 export default class Game extends Application {
   constructor() {
     super({
-      width: window.innerWidth,
-      height: window.innerHeight,
       antialias: true,
       transparent: true,
       resolution: 1,
     });
 
-    // center stage
-    this.stage.position.x = this.renderer.width / 2;
-    this.stage.position.y = this.renderer.height / 2;
-
-    this.stage.scale.x = 0.75;
-    this.stage.scale.y = 0.75;
+    this.setScene();
 
     this.players = {};
     this.items = {};
-
-    this.boundaries = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
 
     this.connect();
 
@@ -106,23 +94,29 @@ export default class Game extends Application {
     return item;
   }
 
+  setScene() {
+    // fullscreen
+    this.renderer.resize(window.innerWidth, window.innerHeight);
+
+    // set stage anchor to center
+    this.stage.position.x = this.renderer.width / 2;
+    this.stage.position.y = this.renderer.height / 2;
+
+    // make sure every player sees at least 80% of the stage
+    const max = Math.min(window.innerHeight, window.innerWidth);
+    const scale = Math.min(1, (max / config.world.size) * (1 - 0.8 + 1));
+
+    this.stage.scale.x = scale;
+    this.stage.scale.y = scale;
+  }
+
   setCenter([x, y]) {
     this.stage.pivot.x = x;
     this.stage.pivot.y = y;
   }
 
   addResizeListeners() {
-    window.addEventListener("resize", () => {
-      this.boundaries = {
-        width: window.innerWidth,
-        height: window.innerHeight,
-      };
-
-      this.renderer.resize(window.innerWidth, window.innerHeight);
-
-      this.stage.position.x = this.renderer.width / 2;
-      this.stage.position.y = this.renderer.height / 2;
-    });
+    window.addEventListener("resize", () => this.setScene());
   }
 
   addMouseListeners() {
