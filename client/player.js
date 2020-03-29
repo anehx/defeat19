@@ -53,7 +53,7 @@ export default class Player {
   }
 
   get isInfected() {
-    return this.state === "infected";
+    return this.state.state === "infected";
   }
 
   setPosition([x, y]) {
@@ -68,7 +68,7 @@ export default class Player {
   }
 
   setState(state) {
-    this.state = state;
+    this.state.state = state;
 
     if (this.circle.state !== state) {
       this.circle.state = state;
