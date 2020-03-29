@@ -4,10 +4,16 @@ import config from "../config";
 const { Graphics } = PIXI;
 
 export default class Bar extends Graphics {
-  draw(percentage, color) {
+  constructor(color) {
+    super();
+
+    this.color = color;
+  }
+
+  draw(percentage) {
     this.clear();
 
-    this.beginFill(color);
+    this.beginFill(this.color);
     this.drawRect(
       0,
       0,
