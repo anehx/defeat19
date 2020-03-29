@@ -115,6 +115,7 @@ html {
     border-style: none none $border-style $border-style;
     border-color: $accent-ui-color;
     justify-content: inherit;
+    max-height: 100vh;
     color: $accent-ui-color;
 
     span {
