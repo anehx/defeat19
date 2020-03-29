@@ -1,6 +1,10 @@
 import Game from "./game";
+import config from "../config";
 
 const game = new Game();
+
+const center = config.world.size / 2;
+game.setCenter([center, center]);
 
 document.body.appendChild(game.view);
 
