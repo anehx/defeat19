@@ -5,7 +5,8 @@ module.exports = {
   world: {
     size: 2000,
     grid: 20,
-    maxSpeed: 7,
+    maxSpeedWhenHealthy: 7,
+    maxSpeedWhenInfected: 8,
     acceleration: 2,
   },
   player: {

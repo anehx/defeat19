@@ -85,7 +85,7 @@ function spawnPlayer(id) {
 
 function movePlayer(id, mouseDir) {
   if (game.players[id] && game.players[id].state !== DEAD) {
-    game.players[id].v = getNextVelocity(mouseDir);
+    game.players[id].v = getNextVelocity(game.players[id], mouseDir);
   }
 }
 
@@ -205,12 +205,16 @@ function handleInfection(player) {
   }
 }
 
-function getNextVelocity(mouseDir) {
-  const newV = mouseDir;
+function getNextVelocity(player, newV) {
+  if (!newV.filter(Boolean).length) {
+    return [0, 0];
+  }
   const speed = abs(newV);
-  return speed < config.world.maxSpeed
-    ? newV
-    : multiply(newV, config.world.maxSpeed / speed);
+  const maxSpeed =
+    player.state === INFECTED
+      ? config.world.maxSpeedWhenInfected
+      : config.world.maxSpeedWhenHealthy;
+  return speed < maxSpeed ? newV : multiply(newV, maxSpeed / speed);
 }
 
 io.on("connection", function (socket) {
