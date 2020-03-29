@@ -10,7 +10,7 @@ app.get("/debug", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
-app.use(express.static(__dirname + "./dist/"));
+app.use(express.static(__dirname + "/dist/"));
 
 const INFECTED = "infected";
 const HEALTHY = "healthy";
