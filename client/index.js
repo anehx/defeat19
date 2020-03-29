@@ -1,17 +1,20 @@
 import Game from "./game";
 
-function startGame() {
-  const startMenu = document.getElementById("start-menu");
+const game = new Game();
+
+document.body.appendChild(game.view);
+
+const startMenu = document.getElementById("start-menu");
+const usernameInput = document.getElementById("username");
+const startButton = document.getElementById("start-game");
+
+function hideStartMenu() {
   startMenu.style.display = "none";
-  document.body.appendChild(new Game().view);
 }
 
 let username = localStorage.getItem("username");
 
 if (!username) {
-  const usernameInput = document.getElementById("username");
-  const startButton = document.getElementById("start-game");
-
   usernameInput.addEventListener("input", ({ target: { value } }) => {
     if (!value && !value.trim()) {
       startButton.classList.add("hidden");
@@ -23,8 +26,10 @@ if (!username) {
 
   startButton.addEventListener("click", (event) => {
     localStorage.setItem("username", username);
-    startGame();
+    game.socket.emit("join");
+    hideStartMenu();
   });
 } else {
-  startGame();
+  game.socket.emit("join");
+  hideStartMenu();
 }

@@ -68,13 +68,14 @@ function getLivingPlayerCount() {
     .length;
 }
 
-function spawnPlayer(id) {
+function spawnPlayer(id, name) {
   const loc = getRandomLoc();
 
   const state = getLivingPlayerCount() % 3 === 0 ? INFECTED : HEALTHY;
 
   game.players[id] = {
     id,
+    name,
     loc,
     v: [0, 0],
     state,
@@ -218,10 +219,9 @@ function getNextVelocity(player, newV) {
 }
 
 io.on("connection", function (socket) {
-  spawnPlayer(socket.id);
-
   socket.emit("hello", socket.id);
 
+  socket.on("join", (playerName) => spawnPlayer(socket.id, playerName));
   socket.on("move", (cmd) => {
     movePlayer(socket.id, cmd);
   });
