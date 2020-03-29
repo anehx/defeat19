@@ -11,8 +11,14 @@
 // $border-radius: none;
 
 // Version 3
-$base-ui-color: white;
-$accent-ui-color: black;
+// $base-ui-color: white;
+// $accent-ui-color: black;
+// $border-style: solid;
+// $border-radius: 10px;
+
+// Version 4
+$base-ui-color: #161616;
+$accent-ui-color: #919191;
 $border-style: solid;
 $border-radius: 10px;
 
@@ -23,9 +29,9 @@ html {
   height: 100vh;
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.7);
+  font-family: "Lato", sans-serif;
 
   #start-menu {
-    font-family: "Lato", sans-serif;
     width: 100vw;
     height: 100vh;
     display: flex;
