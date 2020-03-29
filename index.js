@@ -66,8 +66,8 @@ function getLivingPlayerCount() {
 function spawnPlayer(id) {
   const loc = getRandomLoc();
 
-  // patient 0
-  const state = getLivingPlayerCount() < 1 ? INFECTED : HEALTHY;
+  console.log(getLivingPlayerCount() % 3);
+  const state = getLivingPlayerCount() % 3 === 0 ? INFECTED : HEALTHY;
 
   game.players[id] = {
     id,
