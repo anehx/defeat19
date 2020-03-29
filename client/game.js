@@ -55,7 +55,7 @@ export default class Game extends Application {
 
   drawBoundaries() {
     const border = new Graphics();
-    border.lineStyle(5, 0x000000);
+    border.lineStyle(5, 0xffffff, 0.5);
     border.drawRect(0, 0, config.world.size, config.world.size);
     this.stage.addChild(border);
   }
@@ -64,7 +64,7 @@ export default class Game extends Application {
     for (let x = 0; x < config.world.grid; x++) {
       for (let y = 0; y < config.world.grid; y++) {
         const grid = new Graphics();
-        grid.lineStyle(1, 0x000000);
+        grid.lineStyle(1, 0xffffff, 0.2);
         grid.drawRect(
           (config.world.size / config.world.grid) * x,
           (config.world.size / config.world.grid) * y,
