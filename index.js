@@ -154,7 +154,7 @@ function decreaseHealth(player) {
 
 function collectItems(player) {
   const itemsInRange = Object.values(game.items)
-    .map(({ id, loc }) => ({ id, distance: distance(loc, player.loc) }))
+    .map((item) => ({ ...item, distance: distance(item.loc, player.loc) }))
     .filter(({ distance }) => distance <= config.player.size * 2);
 
   itemsInRange.forEach((item) => {
