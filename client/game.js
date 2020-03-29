@@ -41,7 +41,7 @@ export default class Game extends Application {
     this.addMouseListeners();
     this.addSocketListeners();
 
-    this.ticker.add(() => this.sendVelocity());
+    this.sendVelocity();
   }
 
   get me() {
@@ -120,11 +120,18 @@ export default class Game extends Application {
       };
 
       this.renderer.resize(window.innerWidth, window.innerHeight);
+
+      this.stage.position.x = this.renderer.width / 2;
+      this.stage.position.y = this.renderer.height / 2;
     });
   }
 
   addMouseListeners() {
     document.addEventListener("mousemove", ({ clientX, clientY }) => {
+      const player = this.players[this.playerId];
+
+      if (!player) return;
+
       const width = window.innerWidth;
       const height = window.innerHeight;
       const max = Math.max(Math.min(width, height), 1000) * 0.3;
@@ -134,7 +141,7 @@ export default class Game extends Application {
         y: Math.max(Math.min(clientY - height / 2, max), -1 * max),
       };
 
-      const maxSpeed = this.players[this.playerId].isInfected
+      const maxSpeed = player.isInfected
         ? config.world.maxSpeedWhenInfected
         : config.world.maxSpeedWhenHealthy;
 
@@ -203,5 +210,7 @@ export default class Game extends Application {
       this.socket.emit("move", [this.velocity.x, this.velocity.y]);
       this.velocityChanged = false;
     }
+
+    setTimeout(() => this.sendVelocity(), 1000 / 10);
   }
 }
