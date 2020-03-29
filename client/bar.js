@@ -1,29 +1,23 @@
 import * as PIXI from "pixi.js";
-import config from "../config";
 
 const { Graphics } = PIXI;
 
 export default class Bar extends Graphics {
-  constructor(color) {
+  constructor(color, width, height) {
     super();
 
+    this.size = { width, height };
     this.color = color;
   }
 
   draw(percentage) {
     this.clear();
 
-    this.beginFill(this.color);
-    this.drawRect(
-      0,
-      0,
-      (config.player.bar.width / 100) * percentage,
-      config.player.bar.height
-    );
+    this.beginFill(this.color, 0.5);
+    this.drawRect(0, 0, (this.size.width / 100) * percentage, this.size.height);
     this.endFill();
 
-    this.lineStyle(1, 0xffffff);
-    this.drawRect(0, 0, config.player.bar.width, config.player.bar.height);
-    this.lineStyle(0);
+    this.lineStyle(1, this.color);
+    this.drawRect(0, 0, this.size.width, this.size.height);
   }
 }

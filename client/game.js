@@ -4,8 +4,9 @@ import io from "socket.io-client";
 import config from "../config";
 import Player from "./player";
 import Item from "./item";
+import Bar from "./bar";
 
-const { Application, Graphics } = PIXI;
+const { Application, Graphics, Container, Text } = PIXI;
 
 export default class Game extends Application {
   constructor() {
@@ -14,6 +15,9 @@ export default class Game extends Application {
       transparent: true,
       resolution: 1,
     });
+
+    this.world = new Container();
+    this.stage.addChild(this.world);
 
     this.setScene();
 
@@ -24,6 +28,7 @@ export default class Game extends Application {
 
     this.drawBoundaries();
     this.drawGrid();
+    this.drawBars();
 
     this.addResizeListeners();
     this.addMouseListeners();
@@ -41,11 +46,67 @@ export default class Game extends Application {
     this.socket = io(config.url);
   }
 
+  updateBars({ infection, health }) {
+    const p = (x) => `${Math.ceil(x)}%`;
+
+    this.infection.draw(infection);
+    this.infectionText.text = p(infection);
+    this.health.draw(health);
+    this.healthText.text = p(health);
+  }
+
+  drawBars() {
+    this.infection = new Bar(
+      0xff0000,
+      config.player.bar.own.width,
+      config.player.bar.own.height
+    );
+    this.infectionText = new Text("", {
+      fontFamily: "mono",
+      fontSize: config.player.bar.own.fontSize,
+      fill: 0xffffff,
+    });
+    this.health = new Bar(
+      0x00ff00,
+      config.player.bar.own.width,
+      config.player.bar.own.height
+    );
+    this.healthText = new Text("", {
+      fontFamily: "mono",
+      fontSize: config.player.bar.own.fontSize,
+      fill: 0xffffff,
+    });
+
+    this.stage.addChild(this.infection);
+    this.stage.addChild(this.infectionText);
+    this.stage.addChild(this.health);
+    this.stage.addChild(this.healthText);
+
+    this.infection.x = config.player.bar.own.gutter;
+    this.infection.y = config.player.bar.own.gutter;
+
+    this.infectionText.x =
+      this.infection.x +
+      config.player.bar.own.width +
+      config.player.bar.own.gutter / 2;
+    this.infectionText.y =
+      this.infection.y + config.player.bar.own.fontSize / 4;
+
+    this.health.x = config.player.bar.own.gutter;
+    this.health.y =
+      config.player.bar.own.gutter * 1.5 + config.player.bar.own.height;
+    this.healthText.x =
+      this.health.x +
+      config.player.bar.own.width +
+      config.player.bar.own.gutter / 2;
+    this.healthText.y = this.health.y + config.player.bar.own.fontSize / 4;
+  }
+
   drawBoundaries() {
     const border = new Graphics();
     border.lineStyle(5, 0xffffff, 0.5);
     border.drawRect(0, 0, config.world.size, config.world.size);
-    this.stage.addChild(border);
+    this.world.addChild(border);
   }
 
   drawGrid() {
@@ -59,7 +120,7 @@ export default class Game extends Application {
           config.world.size / config.world.grid,
           config.world.size / config.world.grid
         );
-        this.stage.addChild(grid);
+        this.world.addChild(grid);
       }
     }
   }
@@ -69,11 +130,11 @@ export default class Game extends Application {
 
     if (!player) {
       // player does not exist yet, create a new one
-      player = new Player(id);
+      player = new Player(id, this.playerId === id);
 
       this.players[id] = player;
 
-      this.stage.addChild(player);
+      this.world.addChild(player);
     }
 
     return player;
@@ -88,7 +149,7 @@ export default class Game extends Application {
 
       this.items[id] = item;
 
-      this.stage.addChild(item);
+      this.world.addChild(item);
     }
 
     return item;
@@ -99,20 +160,20 @@ export default class Game extends Application {
     this.renderer.resize(window.innerWidth, window.innerHeight);
 
     // set stage anchor to center
-    this.stage.position.x = this.renderer.width / 2;
-    this.stage.position.y = this.renderer.height / 2;
+    this.world.position.x = this.renderer.width / 2;
+    this.world.position.y = this.renderer.height / 2;
 
     // make sure every player sees at least 80% of the stage
     const max = Math.min(window.innerHeight, window.innerWidth);
     const scale = Math.min(1, (max / config.world.size) * (1 - 0.8 + 1));
 
-    this.stage.scale.x = scale;
-    this.stage.scale.y = scale;
+    this.world.scale.x = scale;
+    this.world.scale.y = scale;
   }
 
   setCenter([x, y]) {
-    this.stage.pivot.x = x;
-    this.stage.pivot.y = y;
+    this.world.pivot.x = x;
+    this.world.pivot.y = y;
   }
 
   addResizeListeners() {
@@ -167,7 +228,7 @@ export default class Game extends Application {
     Object.keys(this.items)
       .filter((key) => !Object.keys(items).includes(key))
       .forEach((key) => {
-        this.stage.removeChild(this.items[key]);
+        this.world.removeChild(this.items[key]);
         delete this.items[key];
       });
   }
@@ -175,6 +236,7 @@ export default class Game extends Application {
   handlePlayersUpdate(players) {
     Object.entries(players).forEach(([id, data]) => {
       if (id == this.playerId) {
+        this.updateBars(data);
         this.setCenter(data.loc);
       }
 
@@ -184,7 +246,7 @@ export default class Game extends Application {
     Object.keys(this.players)
       .filter((key) => !Object.keys(players).includes(key))
       .forEach((key) => {
-        this.stage.removeChild(this.players[key]);
+        this.world.removeChild(this.players[key]);
         delete this.players[key];
       });
   }

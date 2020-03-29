@@ -13,7 +13,14 @@ module.exports = {
     size: 20,
     bar: {
       width: 100,
-      height: 10,
+      height: 5,
+      gutter: 10,
+      own: {
+        width: 250,
+        height: 20,
+        gutter: 20,
+        fontSize: 12,
+      },
     },
   },
   health: {
