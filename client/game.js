@@ -218,41 +218,74 @@ export default class Game extends Application {
         }
       });
 
+      const createIcon = (iconClass) => {
+        const icon = document.createElement("i");
+        icon.classList.add("fas", iconClass);
+        return icon;
+      };
+
+      const updateTimeSpan = (span, player) => {
+        span.innerText = `${Math.trunc(
+          (new Date().getTime() - player.state.timeSpawned) / 1000
+        )}s`;
+      };
+
+      const stateIcons = {
+        healthy: "fa-heart",
+        infected: "fa-virus",
+        immune: "fa-shield-alt",
+        dead: "fa-skull-crossbones",
+      };
+
       Object.entries(this.players)
         .sort(
           ([_, player1], [__, player2]) =>
-            player2.state.health - player1.state.health
+            player1.state.timeSpawned - player2.state.timeSpawned
         )
         .forEach(([id, player]) => {
           let span = document.querySelector(`[player-id="${id}"]`);
           if (!span) {
             span = document.createElement("span");
             span.setAttribute("player-id", id);
+            span.classList.add("status-text");
 
-            const usernameP = document.createElement("p");
-            const username = document.createElement("b");
-            const statsText = document.createElement("p");
-            usernameP.appendChild(username);
-            span.appendChild(usernameP);
-            span.appendChild(statsText);
+            const usernameAbbr = document.createElement("abbr");
+            usernameAbbr.classList.add("username");
+            usernameAbbr.setAttribute("title", player.state.name);
+            usernameAbbr.innerText = player.state.name;
+            span.appendChild(usernameAbbr);
 
-            username.classList.add("username");
-            statsText.classList.add("stats-text");
+            const iconSpan = document.createElement("span");
+            span.appendChild(iconSpan);
+
+            const stopwatchIcon = createIcon("fa-stopwatch");
+            iconSpan.appendChild(stopwatchIcon);
+
+            const timeSpan = document.createElement("span");
+            timeSpan.classList.add("time");
+            updateTimeSpan(timeSpan, player);
+            iconSpan.appendChild(timeSpan);
+
+            const stateIcon = createIcon(stateIcons[player.state.state]);
+            stateIcon.classList.add("state-icon");
+            iconSpan.appendChild(stateIcon);
+
+            const stats = document.querySelector("#stats div");
+            stats.appendChild(span);
+          } else {
+            const username = span.querySelector(".username");
+            username.innerText = player.state.name;
+
+            const timeSpan = span.querySelector(".time");
+            updateTimeSpan(timeSpan, player);
+
+            const stateIcon = span.querySelector(".state-icon");
+            stateIcon.classList.remove(...Object.values(stateIcons));
+            stateIcon.classList.add(stateIcons[player.state.state]);
           }
-
-          const username = span.querySelector(".username");
-          username.innerText = player.state.name;
-          const statsText = span.querySelector(".stats-text");
-
-          statsText.innerText = `Alive: ${Math.trunc(
-            (new Date().getTime() - player.state.timeSpawned) / 1000
-          )}s Status: ${player.state.state}`;
-
-          const stats = document.querySelector("#stats div");
-          stats.appendChild(span);
         });
     }
 
-    setTimeout(() => this.updateStats(), 2000);
+    setTimeout(() => this.updateStats(), 1000);
   }
 }
