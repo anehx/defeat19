@@ -179,7 +179,7 @@ function collectItems(player) {
     if (itemConfig.healthBoost) {
       player.health = Math.min(100, player.health + itemConfig.healthBoost);
     }
-    if (itemConfig.infectionRadius) {
+    if (itemConfig.infectionRadius && player.state === INFECTED) {
       player.infectionRadius = Math.max(
         config.infection.minimumRadius,
         player.infectionRadius + itemConfig.infectionRadius
