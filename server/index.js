@@ -39,13 +39,17 @@ function spawnItem() {
     const id = uuid.v4();
     game.items[id] = { id, loc: getRandomLoc() };
   }
-  const spawnMs =
-    config.item.spawnDelay * 1000 * Math.max(1, getLivingPlayerCount());
-
-  setTimeout(
-    spawnItem,
-    spawnMs + linear(Math.random(), 0, 1, -0.2 * spawnMs, 0.2 * spawnMs)
+  const spawnTimeout =
+    (config.item.spawnDelay * 1000) / Math.max(1, getLivingPlayerCount());
+  const offset = linear(
+    Math.random(),
+    0,
+    1,
+    -0.2 * spawnTimeout,
+    0.2 * spawnTimeout
   );
+
+  setTimeout(spawnItem, spawnTimeout + offset);
 }
 
 gameLoop();
