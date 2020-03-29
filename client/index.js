@@ -1,13 +1,6 @@
 import Game from "./game";
 import config from "../config";
 
-const game = new Game();
-
-const center = config.world.size / 2;
-game.setCenter([center, center]);
-
-document.body.appendChild(game.view);
-
 let username = localStorage.getItem("username");
 
 const startMenu = document.getElementById("start-menu");
@@ -22,12 +15,12 @@ function showStartMenu() {
   startMenu.style.display = "flex";
 }
 
-function startGame(username) {
+function startGame(game, username) {
   game.socket.emit("join", username);
   hideStartMenu();
 }
 
-function changeName() {
+function changeName(game) {
   showStartMenu();
   addListeners((username) => {
     game.socket.emit("change-name", username);
@@ -54,11 +47,16 @@ function addListeners(submitFn = () => {}) {
 }
 
 function start() {
+  const game = new Game();
+  document.body.appendChild(game.view);
+  const center = config.world.size / 2;
+  game.setCenter([center, center]);
+
   const changeNameButton = document.getElementById("change-name");
-  changeNameButton.addEventListener("click", () => changeName());
+  changeNameButton.addEventListener("click", () => changeName(game));
   !username
-    ? addListeners((username) => startGame(username))
-    : startGame(username);
+    ? addListeners((username) => startGame(game, username))
+    : startGame(game, username);
 }
 
 start();
