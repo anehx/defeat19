@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 module.exports = {
   serverURL: process.env.SERVER_URL || "http://localhost:3000",
   simulationSpeed: 60,
