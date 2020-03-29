@@ -8,8 +8,8 @@ export class Zone extends Graphics {
   draw(radius) {
     this.clear();
 
-    this.beginFill(0xff0000, 0.2);
-    this.lineStyle(this.radiusWidth, 0xff0000, 0.5);
+    this.beginFill(0xff0000, 0.1);
+    this.lineStyle(1, 0xff0000, 0.5);
     this.drawCircle(0, 0, radius || config.infection.defaultRadius);
     this.endFill();
   }
