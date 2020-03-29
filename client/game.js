@@ -49,7 +49,7 @@ export default class Game extends Application {
   }
 
   connect() {
-    this.socket = io(config.serverURL);
+    this.socket = io(config.url);
   }
 
   drawBoundaries() {

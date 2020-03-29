@@ -10,7 +10,7 @@ app.get("/debug", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
-app.use(express.static(__dirname + "./client/dist/"));
+app.use(express.static(__dirname + "./dist/"));
 
 const INFECTED = "infected";
 const HEALTHY = "healthy";
@@ -227,6 +227,6 @@ io.on("connection", function (socket) {
   });
 });
 
-http.listen(3000, function () {
-  console.log("listening on *:3000");
+http.listen(config.port, function () {
+  console.log(`listening on *:${config.port}`);
 });

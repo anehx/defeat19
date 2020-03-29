@@ -5,13 +5,13 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write '{,**/}*.{js,html,scss}'",
-    "start:server": "nodemon index.js",
-    "start:client": "parcel client/index.html",
-    "start": "concurrently 'yarn:start:*'",
+    "watch:server": "nodemon index.js",
+    "watch:client": "parcel client/index.html",
+    "watch": "concurrently 'yarn:watch:*'",
+    "start": "node index.js",
     "build": "parcel build client/index.html"
   },
   "dependencies": {
-    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "pixi.js": "^5.2.1",
     "socket.io": "^2.3.0",
