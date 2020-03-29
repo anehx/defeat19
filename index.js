@@ -41,7 +41,8 @@ function gameLoop() {
 function spawnItem() {
   if (Object.keys(game.items).length <= getLivingPlayerCount()) {
     const id = uuid.v4();
-    game.items[id] = { id, loc: getRandomLoc() };
+    const type = getRandomItemType();
+    game.items[id] = { id, type, loc: getRandomLoc() };
   }
   const spawnTimeout =
     (config.item.spawnDelay * 1000) / Math.max(1, getLivingPlayerCount());
@@ -54,6 +55,11 @@ function spawnItem() {
   );
 
   setTimeout(spawnItem, spawnTimeout + offset);
+}
+
+function getRandomItemType() {
+  const types = Object.keys(config.item.types);
+  return types[Math.floor(Math.random() * types.length)];
 }
 
 gameLoop();
@@ -80,6 +86,7 @@ function spawnPlayer(id, name) {
     v: [0, 0],
     state,
     infection: state === INFECTED ? 100 : 0,
+    infectionRadius: config.infection.defaultRadius,
     health: 100,
   };
 }
@@ -148,16 +155,21 @@ function decreaseHealth(player) {
 
 function collectItems(player) {
   const itemsInRange = Object.values(game.items)
-    .map(({ id, loc }) => ({ id, distance: distance(loc, player.loc) }))
+    .map((item) => ({ ...item, distance: distance(item.loc, player.loc) }))
     .filter(({ distance }) => distance <= config.player.size * 2);
 
-  const itemCount = itemsInRange.length;
-  if (itemCount > 0) {
-    player.health = Math.min(
-      100,
-      player.health + config.health.itemIncrease * itemCount
-    );
-  }
+  itemsInRange.forEach((item) => {
+    const itemConfig = config.item.types[item.type];
+    if (itemConfig.healthBoost) {
+      player.health = Math.min(100, player.health + itemConfig.healthBoost);
+    }
+    if (itemConfig.infectionRadius) {
+      player.infectionRadius = Math.max(
+        config.infection.minimumRadius,
+        player.infectionRadius + itemConfig.infectionRadius
+      );
+    }
+  });
 
   itemsInRange.forEach(({ id }) => {
     delete game.items[id];
@@ -171,16 +183,17 @@ function handleInfection(player) {
       : Object.values(game.players)
           .filter((other) => other.id !== player.id)
           .filter((other) => other.state === INFECTED)
-          .map((otherPlayer) => distance(otherPlayer.loc, player.loc))
-          .filter((distance) => distance < config.infection.thresholdDistance)
+          .filter(
+            (other) => distance(other.loc, player.loc) < other.infectionRadius
+          )
           // linear infection rate increase below threshold
-          .reduce((total, distance) => {
+          .reduce((total, other) => {
             return (
               total +
               linear(
-                distance,
-                config.infection.thresholdDistance / 2,
-                config.infection.thresholdDistance,
+                distance(other.loc, player.loc),
+                other.infectionRadius / 2,
+                other.infectionRadius,
                 config.infection.speed,
                 0
               )
