@@ -41,7 +41,7 @@ export default class Game extends Application {
     this.addMouseListeners();
     this.addSocketListeners();
 
-    this.sendKeyEvents();
+    this.ticker.add(() => this.sendVelocity());
   }
 
   get me() {
@@ -127,18 +127,23 @@ export default class Game extends Application {
     document.addEventListener("mousemove", ({ clientX, clientY }) => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const max = Math.min(width, height) * 0.2;
+      const max = Math.max(Math.min(width, height), 1000) * 0.3;
 
       const pxFromCenter = {
         x: Math.max(Math.min(clientX - width / 2, max), -1 * max),
         y: Math.max(Math.min(clientY - height / 2, max), -1 * max),
       };
 
+      const maxSpeed = this.players[this.playerId].isInfected
+        ? config.world.maxSpeedWhenInfected
+        : config.world.maxSpeedWhenHealthy;
+
       const velocity = {
-        x: (pxFromCenter.x / max) * config.world.maxSpeed,
-        y: (pxFromCenter.y / max) * config.world.maxSpeed,
+        x: (pxFromCenter.x / max) * maxSpeed,
+        y: (pxFromCenter.y / max) * maxSpeed,
       };
 
+      this.velocityChanged = this.velocity !== velocity;
       this.velocity = velocity;
     });
   }
@@ -193,11 +198,10 @@ export default class Game extends Application {
       });
   }
 
-  sendKeyEvents() {
-    if (this.velocity) {
+  sendVelocity() {
+    if (this.velocityChanged) {
       this.socket.emit("move", [this.velocity.x, this.velocity.y]);
+      this.velocityChanged = false;
     }
-
-    setTimeout(() => this.sendKeyEvents(), 1000 / 10);
   }
 }
