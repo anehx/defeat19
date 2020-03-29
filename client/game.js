@@ -85,9 +85,7 @@ export default class Game extends Application {
 
       this.players[id] = player;
 
-      this.stage.addChild(player.circle);
-      this.stage.addChild(player.infection);
-      this.stage.addChild(player.health);
+      this.stage.addChild(player);
     }
 
     return player;
@@ -98,7 +96,7 @@ export default class Game extends Application {
 
     if (!item) {
       // item does not exist yet, create a new one
-      item = new Item(id);
+      item = new Item();
 
       this.items[id] = item;
 
@@ -168,8 +166,8 @@ export default class Game extends Application {
   }
 
   handleItemsUpdate(items) {
-    Object.entries(items).forEach(([id, { loc }]) => {
-      this.getItem(id).setPosition(loc);
+    Object.entries(items).forEach(([id, data]) => {
+      this.getItem(id).update(data);
     });
 
     Object.keys(this.items)
@@ -181,27 +179,18 @@ export default class Game extends Application {
   }
 
   handlePlayersUpdate(players) {
-    Object.entries(players).forEach(
-      ([id, { loc, state, infection, health }]) => {
-        if (id == this.playerId) {
-          this.setCenter(loc);
-        }
-
-        const player = this.getPlayer(id);
-
-        player.setPosition(loc);
-        player.setState(state);
-        player.setInfectionLevel(infection);
-        player.setHealthLevel(health);
+    Object.entries(players).forEach(([id, data]) => {
+      if (id == this.playerId) {
+        this.setCenter(data.loc);
       }
-    );
+
+      this.getPlayer(id).update(data);
+    });
 
     Object.keys(this.players)
       .filter((key) => !Object.keys(players).includes(key))
       .forEach((key) => {
-        this.stage.removeChild(this.players[key].circle);
-        this.stage.removeChild(this.players[key].infection);
-        this.stage.removeChild(this.players[key].health);
+        this.stage.removeChild(this.players[key].player);
         delete this.players[key];
       });
   }

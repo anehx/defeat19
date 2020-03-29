@@ -47,7 +47,7 @@ module.exports = {
       desinfection: {
         type: "desinfection",
         healthBoost: 20,
-        infectionRadius: -5,
+        infectionRadius: -15,
       },
     },
   },
