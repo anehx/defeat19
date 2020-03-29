@@ -1,9 +1,10 @@
 config:
   target: "http://localhost:3000"
   # target: "https://defeat19.herokuapp.com"
+  # target: "http://agar19.zosel.ch"
   phases:
     - duration: 20  # Test for 20 seconds
-      arrivalRate: 5 # Every second, add x users
+      arrivalRate: 2 # Every second, add x users
       name: "Ramping up the load"
 scenarios:
   - name: "basic test"
