@@ -208,6 +208,16 @@ export default class Game extends Application {
     if (this.players) {
       const stats = document.getElementById("stats");
 
+      //Clear out non-existent players
+      const playerStatElements = Array.from(
+        document.querySelectorAll("[player-id]")
+      );
+      playerStatElements.forEach((playerStatElement) => {
+        if (!this.players[playerStatElement.getAttribute("player-id")]) {
+          playerStatElement.remove();
+        }
+      });
+
       Object.entries(this.players)
         .sort(
           ([_, player1], [__, player2]) =>
@@ -231,7 +241,7 @@ export default class Game extends Application {
           }
 
           const username = span.querySelector(".username");
-          username.innerText = id;
+          username.innerText = player.state.name;
           const statsText = span.querySelector(".stats-text");
           statsText.innerText = `Vitality: ${Math.trunc(
             player.state.health
