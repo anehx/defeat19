@@ -1,7 +1,120 @@
+// Version 1
+// $base-ui-color: #00d1b2;
+// $accent-ui-color: white;
+// $border-style: solid;
+// $border-radius: 10px;
+
+// Version 2
+// $base-ui-color: white;
+// $accent-ui-color: black;
+// $border-style: solid;
+// $border-radius: none;
+
+// Version 3
+$base-ui-color: white;
+$accent-ui-color: black;
+$border-style: solid;
+$border-radius: 10px;
+
 body,
 html {
   padding: 0;
   margin: 0;
   height: 100vh;
   width: 100vw;
+  background-color: rgba(0, 0, 0, 0.7);
+
+  #start-menu {
+    font-family: "Lato", sans-serif;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .box {
+    width: 600px;
+    height: auto;
+    background-color: $base-ui-color;
+    border-radius: $border-radius;
+    border-style: $border-style;
+    border-color: $accent-ui-color;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .input {
+    margin-bottom: 20px;
+    width: 100%;
+    font-size: 30pt;
+    background-color: $base-ui-color;
+    border: none;
+    border-bottom: $border-style 2px $accent-ui-color;
+    color: $accent-ui-color;
+    text-align: center;
+    height: 60px;
+
+    &::placeholder {
+      color: $accent-ui-color;
+    }
+  }
+
+  .button {
+    width: 400px;
+    height: 60px;
+    background-color: $base-ui-color;
+    border-radius: $border-radius;
+    border: $border-style 2px $accent-ui-color;
+    height: 50px;
+    color: $accent-ui-color;
+    font-size: 30pt;
+    transition: color 250ms, background-color 250ms, opacity 250ms;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+
+    &:hover {
+      background-color: $accent-ui-color;
+      color: $base-ui-color;
+    }
+
+    i {
+      margin-left: 20px;
+    }
+
+    &.hidden {
+      opacity: 0;
+    }
+  }
+
+  .h1 {
+    font-size: 60pt;
+    color: $accent-ui-color;
+  }
+
+  #stats {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: auto;
+    border-radius: 0px 0px 0px $border-radius;
+    border-style: none none $border-style $border-style;
+    border-color: $accent-ui-color;
+    justify-content: inherit;
+    color: $accent-ui-color;
+
+    span {
+      p:first-child {
+        text-align: center;
+      }
+    }
+  }
 }
