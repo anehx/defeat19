@@ -1,12 +1,20 @@
-$base-ui-color: #00d1b2;
-$accent-ui-color: white;
-$border-style: solid;
-$border-radius: 10px;
+// Version 1
+// $base-ui-color: #00d1b2;
+// $accent-ui-color: white;
+// $border-style: solid;
+// $border-radius: 10px;
 
-$base-ui-color: white;
-$accent-ui-color: black;
+// Version 2
+// $base-ui-color: white;
+// $accent-ui-color: black;
 // $border-style: solid;
 // $border-radius: none;
+
+// Version 3
+$base-ui-color: white;
+$accent-ui-color: black;
+$border-style: solid;
+$border-radius: 10px;
 
 body,
 html {
