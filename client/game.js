@@ -42,6 +42,7 @@ export default class Game extends Application {
     this.addSocketListeners();
 
     this.sendKeyEvents();
+    setInterval(this.updateStats.bind(this), 2000);
   }
 
   get me() {
@@ -199,5 +200,39 @@ export default class Game extends Application {
     }
 
     setTimeout(() => this.sendKeyEvents(), 1000 / 10);
+  }
+
+  updateStats() {
+    if (this.players) {
+      const stats = document.getElementById("stats");
+
+      Object.entries(this.players).forEach(([id, player]) => {
+        let span = document.querySelector(`[player-id="${id}"]`);
+        if (!span) {
+          span = document.createElement("span");
+          span.setAttribute("player-id", id);
+
+          const usernameP = document.createElement("p");
+          const username = document.createElement("b");
+          const statsText = document.createElement("p");
+          usernameP.appendChild(username);
+          span.appendChild(usernameP);
+          span.appendChild(statsText);
+
+          username.classList.add("username");
+          statsText.classList.add("stats-text");
+        }
+
+        const username = span.querySelector(".username");
+        username.innerText = id;
+        const statsText = span.querySelector(".stats-text");
+        statsText.innerText = `Vitality: ${Math.trunc(
+          player.state.health
+        )}% Infection: ${Math.trunc(player.state.infection)}%`;
+
+        const stats = document.getElementById("stats");
+        stats.appendChild(span);
+      });
+    }
   }
 }

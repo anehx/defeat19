@@ -9,6 +9,8 @@ export class PlayerCircle extends Graphics {
     super();
 
     this.infected = false;
+    this.infection = 0;
+    this.health = 0;
     this.dead = false;
 
     this.draw();
@@ -47,6 +49,7 @@ export default class Player {
     this.circle = new PlayerCircle();
     this.health = new Bar();
     this.infection = new Bar();
+    this.state = { health: 100, infection: 0 };
   }
 
   setPosition([x, y]) {
@@ -68,10 +71,12 @@ export default class Player {
   }
 
   setHealthLevel(percentage) {
+    this.state.health = percentage;
     this.health.draw(percentage, 0x00ff00);
   }
 
   setInfectionLevel(percentage) {
+    this.state.infection = percentage;
     this.infection.draw(percentage, 0xff0000);
   }
 }
