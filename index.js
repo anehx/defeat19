@@ -152,7 +152,7 @@ function collectItems(player) {
 
 function handleInfection(player) {
   const infectionRaise =
-    player.state === INFECTED
+    player.state !== HEALTHY
       ? 0
       : Object.values(game.players)
           .filter((other) => other.id !== player.id)
