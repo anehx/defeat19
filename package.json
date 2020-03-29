@@ -7,7 +7,7 @@
     "format": "prettier --write '{,**/}*.{js,html,scss}'",
     "watch:server": "nodemon index.js",
     "watch:client": "parcel client/index.html",
-    "watch": "concurrently 'yarn:start:*'",
+    "watch": "concurrently 'yarn:watch:*'",
     "start": "node index.js",
     "build": "parcel build client/index.html"
   },

@@ -1,5 +1,6 @@
 module.exports = {
-  serverURL: process.env.SERVER_URL || "http://localhost:3000",
+  port: process.env.PORT || 3000,
+  url: process.env.SERVER_URL || `http://localhost:${process.env.PORT || 3000}`,
   simulationSpeed: 60,
   world: {
     size: 2000,
