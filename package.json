@@ -5,9 +5,10 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write '{,**/}*.{js,html,scss}'",
-    "start:server": "nodemon index.js",
-    "start:client": "parcel client/index.html",
-    "start": "concurrently 'yarn:start:*'",
+    "watch:server": "nodemon index.js",
+    "watch:client": "parcel client/index.html",
+    "watch": "concurrently 'yarn:start:*'",
+    "start": "node index.js",
     "build": "parcel build client/index.html"
   },
   "dependencies": {
