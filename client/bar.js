@@ -16,7 +16,7 @@ export default class Bar extends Graphics {
     );
     this.endFill();
 
-    this.lineStyle(1, 0x000000);
+    this.lineStyle(1, 0xffffff);
     this.drawRect(0, 0, config.player.bar.width, config.player.bar.height);
     this.lineStyle(0);
   }
