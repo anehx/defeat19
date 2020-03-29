@@ -17,12 +17,12 @@ module.exports = {
     },
   },
   health: {
-    itemIncrease: 20,
     reduceWhenHealthy: 1,
     reduceWhenInfected: 1.5,
   },
   infection: {
-    thresholdDistance: 150,
+    defaultRadius: 150,
+    minimumRadius: 50,
     speed: 1,
     reduceWhenHealthy: 5,
     reduceWhenInfected: 1,
@@ -35,5 +35,20 @@ module.exports = {
     // spawn an item around every x seconds per player
     spawnDelay: 12,
     size: 10,
+    types: {
+      toilet: {
+        type: "toilet",
+        healthBoost: 20,
+      },
+      food: {
+        type: "food",
+        healthBoost: 20,
+      },
+      desinfection: {
+        type: "desinfection",
+        healthBoost: 20,
+        infectionRadius: -5,
+      },
+    },
   },
 };
