@@ -3,14 +3,14 @@ const app = express();
 const uuid = require("uuid");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
-const config = require("../config");
+const config = require("./config");
 const { abs, add, multiply, linear, distance } = require("./math");
 
 app.get("/debug", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
-app.use(express.static(__dirname + "/../client/dist/"));
+app.use(express.static(__dirname + "./client/dist/"));
 
 const INFECTED = "infected";
 const HEALTHY = "healthy";
