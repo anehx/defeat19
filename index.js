@@ -50,17 +50,17 @@ function perfStats() {
       return total + curr[0] * 1000 + curr[1] / 1e6;
     }, 0) / config.simulationSpeed;
 
-  game.perf.playerCount = getLivingPlayerCount();
+  game.perf.playerCount = getActivePlayerCount();
 }
 
 function spawnItem() {
-  if (Object.keys(game.items).length <= getLivingPlayerCount()) {
+  if (Object.keys(game.items).length <= getActivePlayerCount()) {
     const id = uuid.v4();
     const type = getRandomItemType();
     game.items[id] = { id, type, loc: getRandomLoc() };
   }
   const spawnTimeout =
-    (config.item.spawnDelay * 1000) / Math.max(1, getLivingPlayerCount());
+    (config.item.spawnDelay * 1000) / Math.max(1, getActivePlayerCount());
   const offset = linear(
     Math.random(),
     0,
@@ -85,15 +85,34 @@ function getRandomLoc() {
   return [Math.random() * config.world.size, Math.random() * config.world.size];
 }
 
-function getLivingPlayerCount() {
+function getActivePlayerCount() {
   return Object.values(game.players).filter((player) => player.state !== DEAD)
     .length;
+}
+
+function getInfectedPlayerCount() {
+  return Object.values(game.players).filter(
+    (player) => player.state === INFECTED
+  ).length;
+}
+
+function getHealthPlayerCount() {
+  return Object.values(game.players).filter(
+    (player) => player.state === HEALTHY
+  ).length;
 }
 
 function spawnPlayer(id, name) {
   const loc = getRandomLoc();
 
-  const state = getLivingPlayerCount() % 3 === 0 ? INFECTED : HEALTHY;
+  const infected = getInfectedPlayerCount();
+  const healthy = getHealthPlayerCount();
+  console.log(infected / Math.max(1, healthy));
+  const state =
+    infected === 0 ||
+    infected / Math.max(1, healthy) <= config.infection.spawnRatio
+      ? INFECTED
+      : HEALTHY;
 
   game.players[id] = {
     id,
