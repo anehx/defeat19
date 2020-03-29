@@ -38,6 +38,8 @@ html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: absolute;
+    background-color: rgba($base-ui-color, 0.9);
   }
 
   .box {
