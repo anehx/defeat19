@@ -27,6 +27,10 @@ module.exports = {
     reduceWhenHealthy: 5,
     reduceWhenInfected: 1,
   },
+  death: {
+    // remove dead players after x seconds
+    removeAfter: 5,
+  },
   item: {
     // spawn an item around every x seconds per player
     spawnDelay: 12,

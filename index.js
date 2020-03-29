@@ -28,6 +28,10 @@ function gameLoop() {
 
   Object.entries(game.players).map(([id, player]) => {
     game.players[id] = updatePlayer(player);
+
+    if (!game.players[id]) {
+      delete game.players[id];
+    }
   });
   // console.timeEnd("game");
 
@@ -60,13 +64,13 @@ function getRandomLoc() {
 }
 
 function getLivingPlayerCount() {
-  return Object.values(game.players).filter((player) => !player.dead).length;
+  return Object.values(game.players).filter((player) => player.state !== DEAD)
+    .length;
 }
 
 function spawnPlayer(id) {
   const loc = getRandomLoc();
 
-  console.log(getLivingPlayerCount() % 3);
   const state = getLivingPlayerCount() % 3 === 0 ? INFECTED : HEALTHY;
 
   game.players[id] = {
@@ -80,7 +84,9 @@ function spawnPlayer(id) {
 }
 
 function movePlayer(id, mouseDir) {
-  game.players[id].v = getNextVelocity(mouseDir);
+  if (game.players[id] && game.players[id].state !== DEAD) {
+    game.players[id].v = getNextVelocity(mouseDir);
+  }
 }
 
 function isWithinBoundary(coord) {
@@ -107,6 +113,12 @@ function between(value, min, max) {
 
 function updatePlayer(player) {
   if (player.state === DEAD) {
+    if (
+      (new Date().getTime() - player.diedAt.getTime()) / 1000 >=
+      config.death.removeAfter
+    ) {
+      return null;
+    }
     return player;
   }
 
@@ -129,6 +141,7 @@ function decreaseHealth(player) {
   if (player.health <= 0) {
     player.state = DEAD;
     player.health = 0;
+    player.diedAt = new Date();
   }
 }
 
