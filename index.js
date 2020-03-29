@@ -104,6 +104,7 @@ function spawnPlayer(id, name) {
     infection: state === INFECTED ? 100 : 0,
     infectionRadius: config.infection.defaultRadius,
     health: 100,
+    timeSpawned: new Date().getTime(),
   };
 }
 

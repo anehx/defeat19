@@ -243,9 +243,10 @@ export default class Game extends Application {
           const username = span.querySelector(".username");
           username.innerText = player.state.name;
           const statsText = span.querySelector(".stats-text");
-          statsText.innerText = `Vitality: ${Math.trunc(
-            player.state.health
-          )}% Infection: ${Math.trunc(player.state.infection)}%`;
+
+          statsText.innerText = `Alive: ${Math.trunc(
+            (new Date().getTime() - player.state.timeSpawned) / 1000
+          )}s Status: ${player.state.state}`;
 
           const stats = document.querySelector("#stats div");
           stats.appendChild(span);
