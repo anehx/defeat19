@@ -98,8 +98,19 @@ html {
     border-style: none none $border-style $border-style;
     border-color: $accent-ui-color;
     justify-content: inherit;
-    max-height: 100vh;
     color: $accent-ui-color;
+
+    div {
+      max-height: 70vh;
+      overflow: auto;
+    }
+
+    #change-name {
+      width: 100%;
+      height: auto;
+      margin-top: 20px;
+      font-size: 20pt;
+    }
 
     span {
       p:first-child {

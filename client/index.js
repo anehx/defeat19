@@ -8,6 +8,8 @@ game.setCenter([center, center]);
 
 document.body.appendChild(game.view);
 
+let username = localStorage.getItem("username");
+
 const startMenu = document.getElementById("start-menu");
 const usernameInput = document.getElementById("username");
 const startButton = document.getElementById("start-game");
@@ -16,14 +18,26 @@ function hideStartMenu() {
   startMenu.style.display = "none";
 }
 
+function showStartMenu() {
+  startMenu.style.display = "flex";
+}
+
 function startGame(username) {
   game.socket.emit("join", username);
   hideStartMenu();
 }
 
-let username = localStorage.getItem("username");
+function changeName() {
+  showStartMenu();
+  addListeners((username) => {
+    game.socket.emit("change-name", username);
+    hideStartMenu();
+  });
+  usernameInput.value = username;
+  startButton.classList.remove("hidden");
+}
 
-if (!username) {
+function addListeners(submitFn = () => {}) {
   usernameInput.addEventListener("input", ({ target: { value } }) => {
     if (!value && !value.trim()) {
       startButton.classList.add("hidden");
@@ -35,8 +49,16 @@ if (!username) {
 
   startButton.addEventListener("click", (event) => {
     localStorage.setItem("username", username);
-    startGame(username);
+    submitFn(username);
   });
-} else {
-  startGame(username);
 }
+
+function start() {
+  const changeNameButton = document.getElementById("change-name");
+  changeNameButton.addEventListener("click", () => changeName());
+  !username
+    ? addListeners((username) => startGame(username))
+    : startGame(username);
+}
+
+start();

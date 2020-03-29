@@ -247,7 +247,7 @@ export default class Game extends Application {
             player.state.health
           )}% Infection: ${Math.trunc(player.state.infection)}%`;
 
-          const stats = document.getElementById("stats");
+          const stats = document.querySelector("#stats div");
           stats.appendChild(span);
         });
     }

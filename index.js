@@ -251,6 +251,13 @@ io.on("connection", function (socket) {
   socket.emit("hello", socket.id);
 
   socket.on("join", (playerName) => spawnPlayer(socket.id, playerName));
+  socket.on("change-name", (playerName) => {
+    game.players[socket.id] = {
+      ...game.players[socket.id],
+      name: playerName,
+    };
+  });
+
   socket.on("move", (cmd) => {
     movePlayer(socket.id, cmd);
   });
