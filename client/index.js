@@ -12,6 +12,11 @@ function hideStartMenu() {
   startMenu.style.display = "none";
 }
 
+function startGame(username) {
+  game.socket.emit("join", username);
+  hideStartMenu();
+}
+
 let username = localStorage.getItem("username");
 
 if (!username) {
@@ -26,10 +31,8 @@ if (!username) {
 
   startButton.addEventListener("click", (event) => {
     localStorage.setItem("username", username);
-    game.socket.emit("join");
-    hideStartMenu();
+    startGame(username);
   });
 } else {
-  game.socket.emit("join");
-  hideStartMenu();
+  startGame(username);
 }
